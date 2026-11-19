@@ -1,0 +1,504 @@
+% English edition. Build: tectonic paper.tex
+\documentclass[10pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{newtxtext}
+\usepackage{newtxmath}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{rotating}
+\usepackage{xurl}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[fontset=fandol]{ctex}
+% ctex localizes float/caption names; the English edition keeps English
+\renewcommand{\abstractname}{Abstract}
+\renewcommand{\figurename}{Figure}
+\renewcommand{\tablename}{Table}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\tabcolsep}{4pt}
+
+\title{World Models: Definition, Clarification, Distinction, and Boundaries}
+
+\author{Yugui Yu\\ YYG Strategy Lab\\ \texttt{they4897@gmail.com}}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent Between 2024 and 2026, ``world model'' expanded from a technical term in reinforcement-learning textbooks into a high-frequency word shared by industry and the academy, even as the literature concedes there is ``no consensus on what a world model fundamentally is, what it should predict, or how it should be built.'' This paper extends the conceptual toolkit of the human-referential fitting theory to that term. (1)~\textbf{Definition}: the world model is a functional concept, not a concept of an entity---a system has a world model relative to an environment and an action space if and only if it possesses a prediction capability that is action-conditioned, supports interventional queries, and is repeatedly callable as a component. Implementation splits into three families (written-in, learned, and learn-then-formalize); the first condition abstracts the common shape of engineering training objectives, the second formalizes deployment-side usage. (2)~\textbf{Clarification}: a genealogy of the naming competition shows the term prevailed through ambiguity; its confusion is not semantic vagueness but \emph{positional polymorphism}---one functional concept located at four positions (the agent's component, the evaluator's benchmark, the planner's state representation, the trainer's simulated environment), with four forms of invocation (rollout, scoring, query, training ground and generation); existing definitional disputes reduce to disputes over positions. The three illicit slides identified in \emph{Four Concepts, Four Types} each reappear in world-model discourse, joined by a fourth, position confusion, specific to it. (3)~\textbf{Analysis}: three propositions and one limit---the position proposition (perspective is a property of position, not of the concept); the probability proposition (the probability share is a function of the observation position; calibration is the test standard of probabilistic implementations); the task proposition (environment members divide by the origin of their tasks; the laws of physics cover the dynamics of objects, and where physics runs out is where agents begin); and the limit of self-improvement (sustainable recursive self-improvement must retain admixture of real data; a system that produces and grades itself loses testability). (4)~\textbf{Distinctions and boundaries}: the world model and intelligence differ in their object of judgment (policy versus model; being able to act and being able to predict do not imply each other); the world model and AGI are criterially mismatched, and component progress is non-transferable. For terminal compound concepts of the ``intelligent world model'' kind, the paper gives a structural analysis in four converging routes, four requirements, and three boundaries. Eight falsifiability clauses and an admission protocol for new cases close the paper.
+\end{abstract}
+
+\medskip
+\noindent\textbf{Keywords:} world models; artificial general intelligence; human-referential theory; conceptual typology; positional polymorphism; progress-transfer illusion; probabilistic calibration; recursive self-improvement
+
+\section{Introduction}\label{sec:intro}
+
+The usage frequency of ``world model'' rose sharply between 2024 and 2026 while its referent expanded and its discriminative force declined. In February 2024, OpenAI published a technical report under the title ``video generation models as world simulators''\cite{openai2024sora}; in December of the same year, DeepMind called Genie~2 a ``large-scale foundation world model''\cite{deepmind2024genie2}; through 2025 and 2026, practitioners in driving, robotics, spatial intelligence, and agent-environment simulation adopted the self-designation in turn, and several automakers named their cloud-side scenario generators world models. Against this backdrop the survey literature concedes that ``there is no consensus on what a world model fundamentally is, what it should predict, or how it should be built''\cite{chen2026definition}. Multiple surveys of the same period organize the field around generated futures, latent-space prediction, or internal simulators\cite{ding2024understanding,li2025embodied}---the disagreement is not about details but about the meaning of the word itself.
+
+This situation is structurally the problem treated in \emph{Four Concepts, Four Types}\cite{yu2026fourconcepts}: four intelligence terms in daily use without an authoritative account of levels and boundaries, rooted in confusion of concept types. The present work extends that typology, together with the fitting stance established in \emph{Fitting the Practice, Not the Works}\cite{yu2026fitting}, to the crowded term ``world model''.
+
+The paper proceeds as follows. Section~\ref{sec:definition} states the definition, its derivation, and the concept type. Section~\ref{sec:clarify} moves from the naming genealogy through positional polymorphism to the catalogue of illicit slides. Section~\ref{sec:propositions} states three propositions and the limit of self-improvement. Section~\ref{sec:distinction} separates the world model from intelligence and from AGI. Section~\ref{sec:terminal} dissects terminal concepts of the ``intelligent world model'' kind. Section~\ref{sec:falsifiable} gives falsifiability clauses and the admission protocol, and a closing section states the relations to prior work.
+
+The central claim can be stated in one sentence: \textbf{the world model is not a class of entities but a function}. The well-formed question is not whether $X$ is a world model but whether $X$ works as one---conditioned on action, callable for intervention, located somewhere, closed or not.
+
+\section{Definition: Conditions, Derivation, and Type}\label{sec:definition}
+
+\subsection{The functional definition}\label{sec:functional}
+
+\textbf{Definition 1 (world model).} A system $S$ has a world model relative to an environment $E$ and an action space $A$ if and only if:
+
+\begin{itemize}
+\item[(C1)] \textbf{action-conditioning.} The predictions of $S$ take actions as conditioning variables: predicting ``if $a$ is done, how will the environment respond,'' i.e., providing in form a predictive distribution $p(\cdot\mid o,a)$ conditioned on (observation $o$, action $a$), rather than unconditionally continuing an observation sequence;
+\item[(C2)] \textbf{callability.} The prediction capability is repeatedly callable as a component and supports interventional and counterfactual queries: change the conditions (swap the action, alter the scene) and the prediction changes accordingly.
+\end{itemize}
+
+Each condition excludes a class of cases. C1 excludes pure generation: a one-off video output is not a world model; a generative system realizes a world model only when its generation is conditioned on actions and varies with the input. The exclusion has a theoretical counterpart: models trained on factual transitions alone are provably unable to answer counterfactual queries on their own, whatever their data or capacity\cite{balestriero2026counterfactual}. C2 excludes one-off products: a world model is a repeatedly callable capability, not a delivered artifact. 
+The definition deliberately presupposes none of three things. Not implementation: written-in, learned, and learn-then-formalize are three implementation families of one functional concept (Section~\ref{sec:derivation}). Not substrate: network weights, solver code, language-model parameters, even the brain (the cognitive-map tradition since Tolman\cite{tolman1948} and O'Keefe and Nadel\cite{okeefe1978}) can carry it. Not perspective: perspective does not occur in the definition---it is a function of position (Section~\ref{sec:positionth}). The motive for this restraint: existing definitional disputes mostly write implementation details of some position (pixel generation, latent spaces, three-dimensional structure, language) into the definition; this paper tightens the definition to function and assigns the rest to propositions and positions.
+
+\subsection{Derivation and implementation}\label{sec:derivation}
+
+The definition is not an armchair construction. Its derivation abstracts the first condition from the common shape of engineering training practice and distills the second from deployment-side usage.
+
+Engineering practice has converged on a two-stage pipeline. The first stage turns observations into a predictable representation: generative routes first train a compressor (discrete tokens or latents, e.g., the Cosmos tokenizers\cite{nvidia2025cosmos}); the JEPA route works directly on representations of masked blocks, avoiding pixel reconstruction\cite{meta2025vjepa2}. The second stage trains conditional prediction on the representation: loss functions differ, the shape is the same---all condition the next observation's representation on (history of observations, action) (Table~\ref{tab:training}).
+
+\begin{table}[htbp]
+\centering\small
+\caption{Four families of learned implementations: training objectives and sources of actions}
+\label{tab:training}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+Family & Training objective & Source of action variables \\
+\midrule
+Autoregressive tokens (Genie, LWM) & Next/masked-token cross-entropy & Latent-action model inferred from unlabeled video\cite{deepmind2025genie3} \\
+Diffusion / flow matching (GAIA-2, Cosmos-Predict 2.5) & Denoising or flow-matching loss in latent space & Ego trajectories and multi-camera conditions\cite{wayve2025gaia2,nvidia2025cosmos} \\
+JEPA (V-JEPA 2-AC) & Regression on masked-block representations & Proprioception and end-effector pose\cite{meta2025vjepa2} \\
+Recurrent state-space (Dreamer family) & Variational bound plus reward head & Proprioception and control inputs\cite{hafner2025inside} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The abstraction occurs in the second stage: strip away each family's representational choices and loss forms, and what remains is exactly ``prediction conditioned on action''---whence C1. The transition-model notation $p(o'\mid o,a)$ of the partially observable decision-process literature\cite{kaelbling1998pomdp,sutton2018rl} is the same shape written down. C1 is the common denominator of engineering training objectives, not a philosophical preference. C2 originates outside training: the trained conditional prediction is invoked repeatedly in deployment---imagination rollouts, planning loops, scenario generation, offline evaluation. Papers and textbooks stop at the training objective; the deployment-side usage is not in their account, and C2 writes the missing half into the definition. ``Whether callable, callable by whom'' is a question of functional placement, namely the positional polymorphism of Section~\ref{sec:positions}.
+
+By the origin and fixation of rules, implementation splits into three families (Table~\ref{tab:impl}). \textbf{Written-in}: rules are written by humans---physics engines run known equations by deterministic integration and constraint solving; this is the oldest implementation of the functional concept and the special case in which variance is assumed zero (Section~\ref{sec:probability}). \textbf{Learned}: rules are fitted from data---Genie, V-JEPA, Cosmos, InternW0\cite{internw0}. \textbf{Learn-then-formalize}: rules are first induced from interaction and then formally fixed---the Algebraic World Model (AWM) explores unfamiliar environments whose rules are undisclosed, writes mechanistic hypotheses as executable code, tests and revises them against observations, organizes them by category-theoretically guided transformations into typed objects and rules, and finally writes the model into Lean~4 and constructs proofs\cite{awm2026}. Thereby it pushes C2 to its upper bound: beyond predicting the outcome of an intervention, it can prove that under a given action budget no legal winning sequence exists---a universal negation over the intervention space. On two constructed unsolvable variants, AWM produced kernel-checked closed proofs in all six runs; frontier-model baselines produced none in twelve\cite{awm2026}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Three implementation families}
+\label{tab:impl}
+\begin{tabularx}{\textwidth}{llll}
+\toprule
+Family & Origin of rules & Representatives & Inference variance \\
+\midrule
+Written-in & Given a priori & Physics engines & Zero (idealized) \\
+Learned & Fitted from data & Genie, V-JEPA, Cosmos & Positive \\
+Learn-then-formalize & Induced, then frozen & AWM\cite{awm2026} & Zero inference variance, modeling error remains \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The learn-then-formalize family carries a warning: a proof can strictly follow the rules while the rules still fail to match the environment---four of AWM's six initial lower bounds matched the true minimum cost; only after feedback did all six turn correct\cite{awm2026}. Zero inference variance is not zero modeling error (Section~\ref{sec:probability}).
+
+The definition's discriminative force shows at the boundary (Table~\ref{tab:boundary}). Ensemble weather forecasting is often filed under world models, yet it lacks the action condition---humans have no usable action variable over the atmosphere; it is a close relative (a conditional predictor), not a world model.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Boundary cases}
+\label{tab:boundary}
+\begin{tabularx}{\textwidth}{lllY}
+\toprule
+System & C1 & C2 & Verdict \\
+\midrule
+Physics engines (MuJoCo etc.) & Satisfied & Satisfied & Written-in world model \\
+Interactive generation (Genie, Oasis) & Satisfied & Session-level & Learned implementation; memory-limited\cite{deepmind2026genie4} \\
+Pure video generation (one-off output) & Not satisfied & Not satisfied & Material, not a world model \\
+Driving occupancy prediction (BEV/occupancy grids) & Satisfied & Satisfied & World model in the representation position \\
+Language environment simulation\cite{qwen2026agentworld} & Satisfied & Satisfied & World model in the simulated-environment position \\
+Ensemble weather forecasting (GenCast) & Not satisfied & Satisfied & Predictor, not a world model \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Concept type}\label{sec:concepttype}
+
+\emph{Four Concepts, Four Types}\cite{yu2026fourconcepts} establishes: intelligence is a capacity concept, human intelligence a sample concept, artificial intelligence an artifact concept, and AGI a reference-frame concept, each with its own form of ``completed definition.'' This paper adds a fifth row: \textbf{the world model is a functional concept}---its completed definition takes the form of an engineering specification: function (action-conditioned prediction) $\times$ position (where it lies) $\times$ criterion (what test), not the revelation of an essence. ``What a world model essentially is'' is thus a question refused in its very formulation. The three-camp definitional dispute of Section~\ref{sec:clarify} is, under this typology, three variants of one error: each camp takes the product of its own position---generator, latent-space predictor, internal simulator---for the concept itself.
+
+\section{Clarification: Name, Position, and Misuse}\label{sec:clarify}
+
+\subsection{The naming competition and the survival clause}\label{sec:naming}
+
+The term predates its present vogue and does not spring from a single source---at least four streams feed the present usage. Cosmology used ``world model'' as a standard term in the 1930s; Milne's monograph carries ``world-structure'' in its title\cite{milne1935}. The cybernetic tradition says \emph{internal model}---every good regulator must be a model of the system it regulates: Conant and Ashby's 1970 theorem, whose title says ``must \emph{be},'' not the oft-paraphrased ``contain''\cite{conant1970}. On the engineering side, the NIST Real-time Control System lineage installed, in the 1980s--90s, a formal World Model module at each control node, maintaining estimates of the world's past, present, and future states\cite{albus2002rcs}. The canonical cognitive-science source is usually traced to Craik 1943---the organism carries ``a small-scale model of external reality''\cite{craik1943}; yet Craik never used the phrase ``world model,'' and the canonization was a retrospective act completed only in 2022\cite{lecun2022path}.
+
+The neural-network lineage tells of itself otherwise: Schmidhuber's 1990 technical report is recounted by the author himself as the starting point of planning with recurrent world models (the original title does not contain the phrase)\cite{schmidhuber1990}; in 2018, Ha and Schmidhuber ignited the term under the title \emph{World Models}\cite{ha2018world}, opening with Forrester of system dynamics\cite{forrester1971}; in 2022, LeCun's roadmap took up Craik and completed the canonization\cite{lecun2022path}; 2024--2026 brought branding: the video camp says \emph{world simulators}\cite{openai2024sora}, DeepMind says \emph{foundation world model}\cite{deepmind2025genie3}, NVIDIA coins \emph{world foundation model}\cite{nvidia2025cosmos}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{The naming competition, won and lost}
+\label{tab:names}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+Competing name & Users & Outcome \\
+\midrule
+Model of the environment & RL textbooks\cite{sutton2018rl} & Scholarly standard; lost in mass communication \\
+Dynamics model & Model-based RL community & Alive within the niche; did not spread \\
+Internal model & Cybernetics & Alive within the discipline \\
+World simulator & Video camp\cite{openai2024sora} & Loud; has ceded to world model \\
+World foundation model & NVIDIA\cite{nvidia2025cosmos} & New coinage; confined to physical AI \\
+Spatial intelligence & World Labs & Brand word; coexists with world model \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The win--loss pattern of Table~\ref{tab:names} shows: naming competition rewards claimability, not accuracy. Precise names keep claimants out---dynamics model belongs to one technical niche; ``world model'' is loose enough for everyone: video-generation, latent-space, robotics, and driving camps have all claimed it. \emph{Ambiguity is the advantage}---the lexicological corollary of positional polymorphism (Section~\ref{sec:positions}): one word can hold four positions because it never promised to hold only one.
+
+Finally, the relation of the definition to the word (the \textbf{survival clause}). The definition binds to the function, not to the word: a name's range of reference can drift; the criteria of the function do not drift with it---any future system billing itself an ``intelligent world model'' and actually working must realize both conditions internally, or it is not even a world. Should the term complete its semantic drift and settle on the compound goal of the intelligent world system (Section~\ref{sec:terminal}), the functional concept can retreat to established technical names (action-conditioned predictive model, environment model; Table~\ref{tab:names} is the reserve list). The word may be lost; the concept is not; the analysis of this paper migrates with the concept. Each further round of referential inflation leaves the decidable functional specification scarcer still.
+
+\subsection{Positional polymorphism: four positions, four invocations}\label{sec:positions}
+
+The usefulness of a world model can be stated in one line: it moves the cost of trial and error from the real world into the model---real-world trials are expensive, slow, dangerous, and unrepeatable; in-model trials are cheap, parallel, and reversible. But whom this function serves and how it is used divide it into four positions. The claim: the term's confusion is primarily not semantic vagueness but \textbf{positional polymorphism}---one functional concept located at four positions that share the functional core (action-conditioned prediction) while differing in form of invocation, perspective, criterion, and standard of success:
+
+\begin{itemize}
+\item \textbf{Component} (agent side): serving an agent's imagination and planning. Invocation: \emph{rollout}---given observations and candidate action sequences, call the predictor in a loop to obtain imagined trajectories: the Dreamer family trains policies inside the world model itself\cite{hafner2025inside}; V-JEPA 2-AC post-trains action-conditioned predictors on wrist-camera data\cite{meta2025vjepa2}.
+\item \textbf{Evaluation benchmark} (evaluation side): serving verification and safety. Invocation: \emph{scoring}---feed candidate actions or policies to the world model and grade the predicted outcomes without real execution: robotics ranks policies offline\cite{onex2026worldmodel}; driving generates safety-critical scenarios and counterfactual tests\cite{wayve2025gaia2}.
+\item \textbf{State representation} (planning side): serving representation and planning. Invocation: \emph{query}---explicit state representations serving planning and occupancy reasoning\cite{tolman1948,okeefe1978}.
+\item \textbf{Simulated environment} (environment side): serving environment generation and agent training grounds. Invocation: \emph{training ground and generation}---the world model itself as an environment for reinforcement learning\cite{qwen2026agentworld,deepmind2025genie3}, or as a synthesizer of training data\cite{nvidia2025synthetic}.
+\end{itemize}
+
+The common structure of the four invocations is the definition made good: every invocation varies an action variable and observes how the prediction responds---the interventional query is the invocation itself.
+
+Positional polymorphism explains two chronic phenomena. First, \emph{why no consensus}: the three camps of the literature---video generation\cite{openai2024sora}, latent space\cite{lecun2022path}, internal simulator\cite{chen2026definition}---each define for the position they occupy: the video camp defends the products of the component and simulated-environment positions, the latent-space camp the implementation route of the component position, the internal-simulator camp the representation of the representation position. The definitional dispute is a dispute over positions; since the four positions coexist without conflict, the dispute neither converges nor needs to. Second, \emph{why the term inflates in industrial discourse}: naming a product with the generic word is cheaper than stating where it is located---what the vendor omits in saying ``world model'' is exactly ``where, doing what,'' which is all the information there is.
+
+\textbf{The set of positions is open}: the four are currently identified items, not a closed list---new positions enter by the admission protocol of Section~\ref{sec:admission} (if, say, the data engine splits off from the simulated-environment position, one line is added); the explanatory power of positional polymorphism does not depend on the list being closed.
+
+\subsection{The catalogue of illicit slides}\label{sec:slips}
+
+The three illicit slides of \emph{Four Concepts, Four Types}\cite{yu2026fourconcepts} each reappear in world-model discourse, joined by a fourth specific to it:
+
+\begin{enumerate}
+\item \textbf{Operationalism} (measurement passing as definition): generation quality passing as predictive capability---``generated video that looks like the world'' taken as evidence of ``possessing a world model.'' The empirical rebuttal exists: the Physics-IQ benchmark finds visual fidelity essentially uncorrelated with physical understanding\cite{motamed2025physicsiq}.
+\item \textbf{Mereological fallacy} (mechanism passing as the location of a capacity): product passing as function---taking some simulator, generator, or data engine (a product) as a synonym of the world model (a function).
+\item \textbf{Criterion promotion} (engineering criteria passing as conceptual content): resolution, frame rate, session length are performance parameters of the component position, promoted in discourse into definitional elements of the world model.
+\item \textbf{Position confusion} (specific to this discourse): booking one position's success as another's---the scale of a cloud simulator taken as evidence of agent-side predictive capability, or an interactive model's progress taken as proof that simulators have arrived.
+\end{enumerate}
+
+\section{Three Propositions and One Limit}\label{sec:propositions}
+
+\subsection{The position proposition: perspective is decided by position}\label{sec:positionth}
+
+The formal root lies in the textbooks: the state of a Markov decision process is an omniscient idealization; the observation of a partially observable one is what the agent actually sees; the belief state is completed by first-person memory\cite{sutton2018rl,kaelbling1998pomdp}. The component position is by definition first-person: the robot's own cameras, wrist cameras, head cameras\cite{meta2025vjepa2}. The benchmark and representation positions yield a God's-eye perspective: bird's-eye representations, fixed multi-camera rigs, omniscient cloud evaluation---there the camera is a conditioning variable, not a body\cite{wayve2025gaia2}. The simulated-environment position grows a third perspective: the \textbf{disembodied camera}---free viewpoint decoupled from any body. Genie~4's official examples include both prompt styles---``the camera IS the rider's eyes'' and ``the camera moves independently''\cite{deepmind2026genie4}: the disembodied camera has been promoted from an emergent phenomenon to a product feature.
+
+Cognitive science supplies the deepest confirmation: the brain's God's-eye map (place and grid systems in world coordinates) is learned from first-person motor experience\cite{tolman1948,okeefe1978}---the God's-eye view is not an independent point of observation but a compression product of first-person experience. This is strictly isomorphic to the formal layer: the explicit state of the representation position is, in the final analysis, learned from the observation stream of the component position.
+
+Statement of the proposition: \textbf{perspective is not an intrinsic property of the world model but a property of position}. ``Is the world model first-person or God's-eye'' fails as a question about the concept; as a question about a concrete system, its answer is decided by the position it occupies.
+
+\subsection{The probability proposition: the probability share is a function of the observation position}\label{sec:probability}
+
+Why do world models compute probabilistically while physics engines need not? Four sources: partial observability (the observer holds only local information), multi-valued futures (several outcomes of one action are equally reasonable), learning error (fitted parameters carry uncertainty), and chaos (deterministic equations produce unpredictable trajectories\cite{lorenz1963}). The learning layer adds a deeper mechanism: probability hides inside the loss function---the optimum of mean-square regression is the conditional expectation, an \emph{average} over reasonable futures; multi-valued futures averaged into blur is the classic failure mode of early video prediction\cite{mathieu2016video}; diffusion models buy sharpness back by keeping the whole predictive distribution\cite{ho2020ddpm}.
+
+Hence the proposition: \textbf{the probability share is a function of the observation position}. With equations known, initial conditions given, and error negligible (the written-in implementation's position of convenience), the share tends to zero---the physics engine is a world model with variance assumed away; from a first-person observation position the share is necessarily positive. The current architectural spectrum of generative world models reads as a gradient of probability share: observation-stream architectures (the world is the picture being generated; share maximal); narrative-state-plus-rendering architectures (Genie~4 has a language model's narrative plan play the world state, the God's-eye view outsourced to language---but the narrative state is itself probabilistic, and the official materials concede that object permanence drifts over time: drift is the fingerprint of stateless frame-by-frame generation\cite{deepmind2026genie4}); world-state-plus-rendering architectures (explicit state plus perspective projection: engines, persistent three-dimensionality, occupancy grids; share lowest).
+
+The criterion corollary: the test standard of probabilistic implementations is \textbf{calibration} (the predicted distribution matches the frequencies that actually occur); the right-or-wrong of point answers no longer suffices before multi-valued futures. The learn-then-formalize family mirrors this corollary symbolically: zero inference variance (kernel-checked proofs) and modeling error (four of six initial bounds) must be kept separate---proof-follows-rules is inference-layer; rules-match-environment is calibration-layer.
+
+\subsection{The task proposition: where physics runs out is where agents begin}\label{sec:task}
+
+Environment members divide by the \textbf{origin of their tasks}: \emph{self-referential tasks} (living things: maintaining their own organization---the autopoiesis tradition defines life as a network of component production recursively reproducing its own components\cite{varela1974}; the closure-to-efficient-causation tradition supplies the sharper criterion: the causal chains of the living are produced by the system itself, those of objects are supplied from outside\cite{rosen1991}); \emph{practice-assigned roles} (the object's role in practice: the affordance tradition---an object's ``use'' is conferred by its position in practice); \emph{no task} (pure physical objects).
+
+The cognitive correspondence: human infants distinguish agents from objects by self-propulsion and goal-directedness---objects obey cohesion, continuity, and contact; agents are represented as entities whose behavior is goal-directed and contingent\cite{spelke2007core}; pure geometric motion suffices to trigger intention attribution\cite{heider1944}. The philosophical correspondence: the choice among three predictive stances---physical, design, intentional\cite{dennett1987}---so the agent/object divide is decided by predictive strategy, not by ontology.
+
+The technical present is three ways of not dividing: the pixel route treats characters as picture (Genie~3's official limitations concede that ``accurately modeling complex interactions between multiple independent agents'' remains an open challenge\cite{deepmind2025genie3}); the object-centric route has objects without agents (the slot-attention family: entity-hood from persistence and appearance, unrelated to goals\cite{locatello2020slot}); the driving route lets agents enter from the condition side (agent configurations as conditioning inputs\cite{wayve2025gaia2}---agents conferred by annotation, not recognized by the model). Work to bring agents back in has begun: machine-theory-of-mind defines agents as mind-state-modelable entities\cite{rabinowitz2018tom}; Social World Models explicitly model hidden mental states, improving sharply over baselines on social-inference benchmarks\cite{liu2025swm}; a 2025 position paper states that physical and social dynamics sit ``in separate silos'' and that their unification is ``the next crucial frontier''\cite{zhang2025unification}. An architectural realization already exists: Duo embeds the subject into the world model through two jointly trained modules---Intent as the decision center, deciding autonomously in each $\sim$0.7-second chunk whether to speak or wait; Realization generating audiovisual behavior causally synchronized with it\cite{duo2026}.
+
+Statement of the proposition: \textbf{the laws of physics cover the dynamics of objects; where physics runs out is where agents begin}---the behavior of agents must be predicted in layers by the three stances (law, built-in program, belief and desire). This gives the structural ground for the companion article's criterion that ``the test of intelligence happens where physics runs out''\cite{yu2026worldmodelq}: where physics runs out is exactly the agent--object divide; the distinction of fitting targets (finished works as the result side of practice, interaction trajectories as its stream) is the task proposition's projection on the data side.
+
+\subsection{The limit of self-improvement: two predictions about recursive world models}\label{sec:selfimprove}
+
+The recursively self-improving world model---a system training itself in its own imagination---is the current frontier of discussion. That the definition is silent here is by design: C1 and C2 are functional criteria and blind to the supply side---who trained the system, through how many rounds of self-improvement, does not change whether it is a world model. The framework does, however, yield two testable predictions about sustainability.
+
+\textbf{Prediction 1 (collapse anchor): sustainable recursive self-improvement must retain admixture of real data.} Distributional degradation under closed-loop self-feeding is confirmed theoretically and empirically\cite{shumailov2024}; admixing real data at every generation prevents collapse, also with theoretical guarantee\cite{gerstgrasser2024}. This prediction and the data stratification of \emph{Fitting the Practice: A Data Methodology}\cite{yu2026methodology} are two faces of one coin: synthetic data made by a world model (the generation form) may feed policies, but fed to the world model itself a purely synthetic diet is unsustainable.
+
+\textbf{Prediction 2 (calibration cannot self-certify): a system that produces and grades itself loses testability.} Calibration compares the predicted distribution against the frequencies the environment actually produces (Section~\ref{sec:probability})---the party performing this comparison must stand outside the world. If every error signal in the improvement loop comes from the system itself, it either degrades by drift (Prediction 1's path) or becomes unverifiable in self-grading: no external criterion remains to adjudicate whether it is still improving. The Dreamer family is the standing contrast: policies are trained inside the world model's imagination rollouts---the inner loop closes; the world model itself is always trained and calibrated on real interaction data---the outer loop never closes\cite{hafner2025inside}. The sustainable form of recursive self-improvement is this structure, not full closure.
+
+Two predictions, one sentence: \textbf{a world model may participate in training itself, but cannot be certified by itself alone}. Falsification conditions: clause 7 of Section~\ref{sec:falsification}.
+
+\section{Distinctions: From Intelligence and From AGI}\label{sec:distinction}
+
+\subsection{From intelligence: policy versus model}\label{sec:policy}
+
+A natural objection: this definition closely resembles the definition of intelligence---both share one vocabulary: action, intervention, and correction. The difference lies not in the vocabulary but in the object of judgment. \emph{Four Concepts, Four Types}\cite{yu2026fourconcepts} holds: intelligence is a capacity concept whose predicates attach to the combination of system and environment range, answering ``what the system can do, within what range,'' closing in the form of a measurement; the world model is a functional concept (Section~\ref{sec:concepttype}), closing in the form of an engineering specification. The two sit at opposite ends of policy and model:
+
+(1) Object of judgment. Intelligence judges the agent's output---whether it itself does rightly (reliable, answers counterfactuals, corrects when told); the world model specifies prediction---how the environment will respond to action. In decision-theoretic notation: intelligence's criteria fall on the output quality of the policy $\pi(a\mid o)$; the world model's specification falls on the transition model $p(o'\mid o,a)$.
+
+(2) Mutual non-implication. Being able to act does not imply being able to predict: model-free policies behave competently yet deliver no prediction of environmental response; being able to predict does not imply being able to act: a simulator that predicts the falling cup to the pixel cannot catch the cup. Were the two definitions redundant, one of these directions would be impossible; both are commonplace.
+
+(3) The standing of action is reversed. The world-model definition takes action as input variable (the condition consumed); intelligence takes action as output (the deed produced).
+
+The resemblance is therefore inheritance, not redundancy: \emph{Fitting the Practice, Not the Works}\cite{yu2026fitting} draws all functional concepts from the practice side; the shared vocabulary of the two definitions follows from that source, while their predicates fall on different objects. The falsifiability clauses of \emph{Four Concepts, Four Types} reserve ``a strict definition of component-level capacity'' as a revision condition for its mereological-fallacy diagnosis---the present definition is exactly such a component-level specification: it specifies the component's own function (prediction quality judged by calibration) without attributing system-level capacity predicates to the component, and so does not trigger the fallacy.
+
+\subsection{Category: concepts of different types}\label{sec:category}
+
+AGI is a reference-frame concept---its completed definition is the selection of a reference frame, human practice as the referent\cite{yu2026fourconcepts}; the world model is a functional concept---its completed definition is an engineering specification. The cross-type comparison ``whether a world model is AGI'' is ill-posed, as ``whether this part is a car'' is ill-posed. The well-posed form: whether a system's world-model component serves the system's overall assessment, at which position, in which manner. Genie~4's official claim that ``understanding and simulating the world is a crucial aspect of building AGI''\cite{deepmind2026genie4} is defensible as a component claim; as a route claim (Section~\ref{sec:transfer}) it requires separate argument.
+
+\subsection{Criterion: criterial mismatch}\label{sec:criteria}
+
+The criteria of world models are local: the component position looks at calibration and interventional-query pass rates; the benchmark position at distributional coverage and scenario fidelity; the representation position at the planning utility of its states. The assessment of AGI is global: coverage of the full spectrum and span of human practice\cite{yu2026fitting}. The two levels do not interchange: Physics-IQ's negative result (visual fidelity uncorrelated with physical understanding\cite{motamed2025physicsiq}) is a local demonstration of criterial mismatch---material-side metrics do not judge components; component metrics do not judge systems. A system can score near-perfectly on physics benchmarks while covering almost none of the practice spectrum; conversely, a system with a mediocre world-model component may achieve overall passing results in particular practice domains through other components.
+
+\subsection{Transfer: the world-model axis of the progress-transfer illusion}\label{sec:transfer}
+
+\emph{Two Different Goals}\cite{yu2026twogoals} diagnosed: measurable progress in artificial intelligence is silently booked as progress toward the machine mind---the progress-transfer illusion. This paper identifies its new case on the world-model axis: the component milestones of world models booked as overall milestones toward AGI. The ``world models are the road to AGI'' discourse and product launches coupled to AGI countdowns are the same mechanism at work. The illusion errs in both directions: forward, component completion booked as system completion; backward, component failure booked as system failure---the drift of generative worlds cited as evidence that ``AGI is hopeless'' shares the error of high scores cited as ``AGI is imminent.'' Component progress is non-transferable because of criterial mismatch (Section~\ref{sec:criteria}): the two sets of criteria are incommensurable, and progress in one cannot be read as progress in the other.
+
+\subsection{Component: closure in use}\label{sec:closure}
+
+The standing of a world-model component is conferred by \textbf{closure in use}: predictions consumed, checked, corrected---imagination drills, simulated-environment training, benchmark testing are all forms of closure; the errors have somewhere to go, and the component becomes load-bearing; rendering alone with errors unconsumed, it is a more splendid engine, with full value as a tool. Hence this paper's verdict on the route dispute: the video-generation and latent-space camps are both building components; they differ in position and mode of closure, not in ``who is closer to AGI.'' The proper question is not whether a world model is needed but \textbf{where it lies and whether it is closed}. Table~\ref{tab:summary} summarizes the distinctions.
+
+\begin{table}[htbp]
+\centering\small
+\caption{The world model versus AGI}
+\label{tab:summary}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+Dimension & World model & AGI \\
+\midrule
+Concept type & Functional concept & Reference-frame concept (overall assessment) \\
+Completed definition & Engineering specification (function $\times$ position $\times$ criterion) & Selection of reference frame (practice spectrum) \\
+Assessment & Local, gradable & Global, all-or-nothing suite \\
+Progress & Component progress & Not transferable from component progress \\
+Relation & Candidate load-bearing component of AGI systems & Its assessment does not run through the world model's internal metrics \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{The Terminal Form: ``Intelligent World Models''}\label{sec:terminal}
+
+An industrial convergence is producing a new compound term: the ``intelligent world model'' that wants both environmental prediction and intelligence---or simply the ``AGI world model.'' This section dissects the terminal concept with the definition and the three propositions: what it is (four converging routes, four requirements) and what it runs into (three boundaries).
+
+\subsection{Four converging routes}\label{sec:routes}
+
+The \textbf{Google stack} is the most complete picture: Genie as world\cite{deepmind2026genie4}, SIMA~2 as inhabitant---trained and bootstrapped inside worlds generated by Genie~3\cite{deepmind2025sima2}, Gemini as in-loop director reviewing frames and revising plans\cite{deepmind2026genie4}. Its official mission sentence---``understanding and simulating the world is a crucial aspect of building AGI''\cite{deepmind2026genie4}---states the goal. The \textbf{substrate route} (the Fei-Fei Li line) shares the direction with complementary ordering: world before intelligence---persistent, editable three-dimensional worlds as the substrate on which intelligence grows\cite{worldlabs2025marble,worldlabs2026atlas}. The \textbf{component route} (the LeCun line) runs the other way: intelligence first, the world model as the intelligence's component rather than the world as the intelligence's container\cite{lecun2022path}; hierarchical action-conditioned JEPA world models are the line's recent implementation advance\cite{zhang2026hjepa}. The fourth route runs the same way as the component route, more radically: the reciprocal world model builds the inhabitant first and matches a world to it---subject and world endogenously coupled in training, the world for now only the spacetime of dialogue\cite{duo2026}.
+
+By order of assembly the four routes fall into two parties: \textbf{world-first} (Google stack and substrate route---build the world well, then move the inhabitants in) and \textbf{intelligence-first} (component route and reciprocal world model---first the moving intelligence, then thicken the world). The confluence of both parties is the same four requirements (Section~\ref{sec:four}). The referent of ``intelligent world model'' lies with the first party; the second party indicates that this terminal is reachable by more than one construction order.
+
+\subsection{Four requirements}\label{sec:four}
+
+Were the two parties to converge and all four requirements to hold, the constructed system would be: \textbf{enterable} (real-time interaction); \textbf{self-sustaining physics} (internally consistent causal chains---beyond the statefulness problem, no longer drifting: the written-in family's quality of state achieved by learning); \textbf{intelligent inhabitants} (agents fully embedded and self-improving---the extreme of the simulated-environment training-ground form); \textbf{persistent operation} (long-horizon consistency---the shared weakness of all current public demonstrations\cite{deepmind2026genie4}). The four requirements fall respectively on this paper's four analytical dimensions: interaction is invocation (Section~\ref{sec:positions}); state is the implementation spectrum (Section~\ref{sec:derivation}); inhabitants are the task proposition (Section~\ref{sec:task}); persistence is the long-horizon face of the probability proposition (Section~\ref{sec:probability}). The terminal form is not a new thing the framework cannot hold; it is the intersection of its four dimensions, each pushed to its end.
+
+\subsection{Three boundaries}\label{sec:boundaries}
+
+First, conceptual: \textbf{the fullest realization, not a new concept}. The constructed world unites simulated environment, component, and state representation---the fullest realization in the world-model spectrum; ``intelligent world model,'' if it names a product, is merely a name (Section~\ref{sec:naming}); if it names a criterion, a category error (Section~\ref{sec:category}: functional and reference-frame concepts have criteria that do not interchange).
+
+Second, criterial: \textbf{criteria stop at interaction}. What can be checked of a constructed world is interactive behavior only: consistency, physical response, inhabitant performance. ``Is there really a world, really a mind, inside'' re-enacts the third-person criterion failure diagnosed in \emph{Two Different Goals}\cite{yu2026twogoals}: the criterial failure met by world-makers is the same failure met by mind-makers---if inhabitants genuinely have experience it cannot be verified from outside; if it can be verified, it is only checkable function.
+
+Third, attributional: \textbf{the inhabitants' intelligence belongs to that world}. The criterion of \emph{Four Concepts, Four Types}\cite{yu2026fourconcepts}---the attribution of a capacity predicate is the combination of system and environment range---yields: the inhabitants' intelligence holds and is real relative to that world, but cannot be attributed to our world; cross-world migration requires the two worlds' laws and practices to be isomorphic, and the test of isomorphism is calibration against us---which runs straight into the two predictions of Section~\ref{sec:selfimprove}: a self-sustaining world that does not calibrate against the outside either degenerates or loses testability.
+
+In one sentence: building a self-consistent world is not the hardest part; the hardest part is building a world whose states can be calibrated against observations from outside it.
+
+\section{Refutability: Falsifiability Clauses and the Admission Protocol}\label{sec:falsifiable}
+
+\subsection{Falsifiability clauses}\label{sec:falsification}
+
+\begin{enumerate}
+\item \textbf{Condition one of the definition}: should a system fail action-conditioning yet still support interventional queries---unconditional generation acquiring interventional responsiveness for free---C1 is void and the definition retreats to callability alone.
+\item \textbf{Empirical pillar of the task proposition}: should purely video-trained models match action-conditioned, interaction-trajectory-trained models at equal scale on interventional and counterfactual queries, the companion article's testable prediction lapses\cite{yu2026worldmodelq} and the task proposition loses its data-side support.
+\item \textbf{Necessity of the functional definition}: should the field converge on a structural definition (world models defined by some structure of internal representation) that unifies the four positions while retaining discriminative force, this paper's claim that the completed definition is an engineering specification is weakened.
+\item \textbf{Boundary of transfer}: should some internal metric of world models prove isomorphic to the overall assessment of AGI---component metrics transferable---the distinction of Section~\ref{sec:transfer} is void.
+\item \textbf{The task trichotomy}: should the prediction of agents' behavior be fully reducible to physical law (task attribution physicalized), the trichotomy of Section~\ref{sec:task} is void.
+\item \textbf{Positional polymorphism}: should a single system occupy all positions at once, without differentiated contexts of use, while retaining each position's criteria---the division of positions fails, positional polymorphism lapses, and Section~\ref{sec:clarify}'s explanation degrades into a historical note on 2020s discourse.
+\item \textbf{The limit of self-improvement}: should a fully closed recursively self-improving system---no external real-data admixture, no external calibration---sustain calibration against its environment over the long run, both predictions of Section~\ref{sec:selfimprove} are void.
+\item \textbf{The terminal boundary}: should the intelligent inhabitants of a constructed world migrate to other worlds without their world being calibrated against the external one---``the inhabitants' intelligence belongs to that world'' is void and the third boundary of Section~\ref{sec:boundaries} is overturned (simultaneously implying that progress in one world can be read as progress in another, partially merging with clause 4).
+\end{enumerate}
+
+\subsection{The admission protocol: how new cases enter the framework}\label{sec:admission}
+
+The framework stays open to the unknown; new cases are located by three questions, without modifying the definition.
+
+Question one: do they pass the two conditions---action-conditioned (C1), repeatedly callable and interventional (C2)? Passing both, it is a world model; proceed. Failing either, classify by Table~\ref{tab:boundary}'s rubric (material, predictor, close relative), or judge it merely a name per Section~\ref{sec:slips}---the word's being claimed is not the concept's being realized.
+
+Question two: where does it lie---component, evaluation benchmark, state representation, simulated environment, or a new position? Position is decided by whom it serves: whose imagination, whose testing, whose planning, whose training. If a new position, register it under the open-set clause: whom it serves, what its criteria are, where it borders the existing positions.
+
+Question three: how is it closed---rollout, scoring, query, training ground and generation; which form of invocation, where do the errors flow? Errors consumed by no one: the work-side rendering alone (Section~\ref{sec:closure}).
+
+Three answers given, the case is located in the coordinate system. What does not fit the coordinate system has two dispositions: that which challenges the definition itself (unconditional generation acquiring interventional responsiveness) triggers clause 1; that which overflows all existing dimensions is a genuine counterexample and the entry point of the next revision. Two cases demonstrate: Duo embeds intelligent agents into the world model, located at the agent-end of the simulated-environment position's agent--object spectrum\cite{duo2026}; the Algebraic World Model writes rules induced from interaction into a formal system, located in the written-in family's learn-then-formalize line, pushing C2 to the upper bound of universal quantification\cite{awm2026}. Neither direction altered any clause of the framework.
+
+\section*{Closing}
+
+The tools of this paper come from the human-referential fitting theory: the fitting stance and the works/practice distinction from \emph{Fitting the Practice, Not the Works}\cite{yu2026fitting}; the structured audit of failure data from \emph{Success Provides Direction, Failure Provides Precision}\cite{yu2026failure}; data stratification and the admixture requirement from \emph{Fitting the Practice: A Data Methodology}\cite{yu2026methodology}; the progress-transfer illusion and the diagnosis of criterial failure from \emph{Two Different Goals}\cite{yu2026twogoals}; the conceptual typology and the catalogue of illicit slides from \emph{Four Concepts, Four Types}\cite{yu2026fourconcepts}; and the three criteria of the companion article, here formalized as the task proposition, the definition, and the component-level distinction. In this theory the world model is not an ultimate goal awaiting realization but a function, a position, and a prediction open to calibration. The test of intelligence does not happen in the realism of rendering but where physics runs out and in closure in use; the terminal form pushes the four dimensions to their ends, while calibration must still be executed from outside the world. Such is the step from fitting practice to fitting the world.
+
+\begin{thebibliography}{99}\small
+
+\bibitem{yu2026fitting}
+Yugui Yu. Fitting the Practice, Not the Works: A Human-Referential Theory of AGI. Zenodo: 10.5281/zenodo.23391808, 2026.
+
+\bibitem{yu2026failure}
+Yugui Yu. Success Provides Direction, Failure Provides Precision: A Structured Audit of Failure Data in LLM Training（成功给方向，失败给精度）. Zenodo: 10.5281/zenodo.23355929, 2026.
+
+\bibitem{yu2026methodology}
+Yugui Yu. Fitting the Practice: A Data Methodology for Frontier Model Training（拟合实践：前沿模型训练的数据方法论）. Zenodo: 10.5281/zenodo.23488466, 2026.
+
+\bibitem{yu2026twogoals}
+Yugui Yu. Two Different Goals: Dissociating the Machine Mind from Artificial Intelligence（两个不同的目标）. Zenodo: 10.5281/zenodo.23969047, 2026.
+
+\bibitem{yu2026fourconcepts}
+Yugui Yu. Four Concepts, Four Types: Levels, Boundaries, and a Translation Protocol for Intelligence, Human Intelligence, Artificial Intelligence, and AGI（四个概念，四种类型）. Zenodo: 10.5281/zenodo.24096362, 2026.
+
+\bibitem{yu2026worldmodelq}
+Yugui Yu. The World-Model Question（世界模型之问）. Companion blog article, 2026.
+
+\bibitem{ding2024understanding}
+Ding, J., Zhang, Y., Shang, Y., et al. Understanding World or Predicting Future? A Comprehensive Survey of World Models. arXiv:2411.14499, 2024.
+
+\bibitem{li2025embodied}
+Li, X., He, X., Zhang, L., Wu, M., Li, X., \& Liu, Y. A Comprehensive Survey on World Models for Embodied AI. arXiv:2510.16732, 2025.
+
+\bibitem{chen2026definition}
+Chen, X., Guo, H., Guo, S., et al. A Definition and Roadmap for World Models. arXiv:2607.06401, 2026.
+
+\bibitem{sutton2018rl}
+Sutton, R. S., \& Barto, A. G. Reinforcement Learning: An Introduction (2nd ed.). MIT Press, 2018.
+
+\bibitem{openai2024sora}
+OpenAI. Video Generation Models as World Simulators. Technical report, 2024.
+
+\bibitem{lecun2022path}
+LeCun, Y. A Path Towards Autonomous Machine Intelligence. OpenReview, 2022.
+
+\bibitem{balestriero2026counterfactual}
+Balestriero, R., LeCun, Y., \& Varaku, K. Counterfactual World Models: JEPAs That Reason About ``What If''. arXiv:2611.24778, 2026.
+
+\bibitem{zhang2026hjepa}
+Zhang, W., Terver, B., Rabbat, M., LeCun, Y., \& Balestriero, R. H-JEPA: End-to-End Learning of Hierarchical World Models for Visual Planning. arXiv:2610.06805, 2026.
+
+\bibitem{kaelbling1998pomdp}
+Kaelbling, L. P., Littman, M. L., \& Cassandra, A. R. Planning and Acting in Partially Observable Stochastic Domains. Artificial Intelligence, 101(1--2), 1998.
+
+\bibitem{hafner2025inside}
+Hafner, D., et al. Training Agents Inside of Scalable World Models. arXiv:2509.24527, 2025.
+
+\bibitem{meta2025vjepa2}
+Meta AI. V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning. arXiv:2506.09985, 2025.
+
+\bibitem{deepmind2024genie2}
+Google DeepMind. Genie 2: A Large-Scale Foundation World Model. 2024.
+
+\bibitem{deepmind2025genie3}
+Google DeepMind. Genie 3: A New Frontier for World Models. 2025.
+
+\bibitem{deepmind2026genie4}
+Google DeepMind. Genie 4: A New Generation of World Simulation. 2026.
+
+\bibitem{deepmind2025sima2}
+SIMA Team, Google DeepMind. SIMA 2: A Generalist Embodied Agent for Virtual Worlds. arXiv:2512.04797, 2025.
+
+\bibitem{worldlabs2025marble}
+World Labs. Marble: A Multimodal World Model. 2025.
+
+\bibitem{worldlabs2026atlas}
+World Labs. Atlas: A World Model for Spatial Intelligence. 2026.
+
+\bibitem{nvidia2025cosmos}
+NVIDIA. Cosmos World Foundation Model Platform for Physical AI. arXiv:2501.03575, 2025.
+
+\bibitem{nvidia2025synthetic}
+NVIDIA. Enhance Robot Learning with Synthetic Trajectory Data Generated by World Foundation Models. Developer blog, 2025.
+
+\bibitem{onex2026worldmodel}
+1X Technologies. 1X World Model and World Model Challenge. 2024--2026; technical report Generative World Modelling for Humanoids, arXiv:2510.07092.
+
+\bibitem{wayve2025gaia2}
+Wayve. GAIA-2: A Controllable Multi-Video Generative World Model. arXiv:2503.20523, 2025.
+
+\bibitem{qwen2026agentworld}
+Zuo, Y., Xiao, Z., Sheng, L., et al. Qwen-AgentWorld: Language World Models for General Agents. arXiv:2606.24597, 2026.
+
+\bibitem{internw0}
+Cai, J., Mu, Y., et al. InternW0: A Foundational Physical World Model for Efficient Real-World Interactions. arXiv:2609.27656, 2026.
+
+\bibitem{duo2026}
+Cao, H., Gong, B., Lu, G., et al. Duo: A Reciprocal World Model for Full-Duplex Interaction. arXiv:2611.15131, 2026.
+
+\bibitem{awm2026}
+Pan, G., Tan, Q., Yuan, Y., \& Yao, A. C.-C. Algebraic World Model: From Exploration to Proofs. arXiv:2610.40503, 2026.
+
+\bibitem{motamed2025physicsiq}
+Motamed, S., Culp, L., Swersky, K., Jaini, P., \& Geirhos, R. Do Generative Video Models Understand Physical Principles? arXiv:2501.09038, 2025.
+
+\bibitem{mathieu2016video}
+Mathieu, M., Couprie, C., \& LeCun, Y. Deep Multi-Scale Video Prediction Beyond Mean Square Error. ICLR 2016.
+
+\bibitem{ho2020ddpm}
+Ho, J., Jain, A., \& Abbeel, P. Denoising Diffusion Probabilistic Models. NeurIPS 2020.
+
+\bibitem{lorenz1963}
+Lorenz, E. N. Deterministic Nonperiodic Flow. Journal of the Atmospheric Sciences, 20, 1963.
+
+\bibitem{spelke2007core}
+Spelke, E. S., \& Kinzler, K. D. Core Knowledge. Developmental Science, 10(1), 2007.
+
+\bibitem{heider1944}
+Heider, F., \& Simmel, M. An Experimental Study of Apparent Behavior. American Journal of Psychology, 57(2), 1944.
+
+\bibitem{dennett1987}
+Dennett, D. C. The Intentional Stance. MIT Press, 1987.
+
+\bibitem{varela1974}
+Varela, F. G., Maturana, H. R., \& Uribe, R. Autopoiesis: The Organization of Living Systems. Biosystems, 5(4), 1974.
+
+\bibitem{rosen1991}
+Rosen, R. Life Itself. Columbia University Press, 1991.
+
+\bibitem{rabinowitz2018tom}
+Rabinowitz, N., et al. Machine Theory of Mind. ICML 2018.
+
+\bibitem{liu2025swm}
+Zhou, X., Liu, J., Yerukola, A., Kim, H., \& Sap, M. Social World Models. arXiv:2509.00559, 2025.
+
+\bibitem{zhang2025unification}
+Zhang, X., Ma, C., Huang, Y., Huang, W., Qi, S., Zhu, S.-C., Feng, X., \& Yang, Y. World Models Should Prioritize the Unification of Physical and Social Dynamics. arXiv:2510.21219, 2025; NeurIPS 2025 Position Paper Track.
+
+\bibitem{locatello2020slot}
+Locatello, F., et al. Object-Centric Learning with Slot Attention. NeurIPS 2020.
+
+\bibitem{tolman1948}
+Tolman, E. C. Cognitive Maps in Rats and Men. Psychological Review, 55(4), 1948.
+
+\bibitem{okeefe1978}
+O'Keefe, J., \& Nadel, L. The Hippocampus as a Cognitive Map. Oxford University Press, 1978.
+
+\bibitem{craik1943}
+Craik, K. J. W. The Nature of Explanation. Cambridge University Press, 1943.
+
+\bibitem{conant1970}
+Conant, R. C., \& Ashby, W. R. Every Good Regulator of a System Must Be a Model of That System. International Journal of Systems Science, 1(2), 1970.
+
+\bibitem{albus2002rcs}
+Albus, J. S., Huang, H.-M., Messina, E. R., et al. 4D/RCS Version 2.0: A Reference Model Architecture for Unmanned Vehicle Systems. NISTIR 6910, National Institute of Standards and Technology, 2002.
+
+\bibitem{schmidhuber1990}
+Schmidhuber, J. Making the World Differentiable: On Using Self-Supervised Fully Recurrent Neural Networks for Dynamic Reinforcement Learning and Planning in Non-Differentiable Environments. Technical Report FKI-126-90, TU M\"unchen, 1990; see also the author's retrospective account.
+
+\bibitem{milne1935}
+Milne, E. A. Relativity, Gravitation and World-Structure. Oxford University Press, 1935.
+
+\bibitem{forrester1971}
+Forrester, J. W. World Dynamics. Wright-Allen Press, 1971.
+
+\bibitem{shumailov2024}
+Shumailov, I., et al. AI Models Collapse When Trained on Recursively Generated Data. Nature, 631, 755--759, 2024.
+
+\bibitem{gerstgrasser2024}
+Gerstgrasser, M., et al. Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data. ICML 2024.
+
+\bibitem{ha2018world}
+Ha, D., \& Schmidhuber, J. World Models. arXiv:1803.10122, 2018.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,500 @@
+% 中文版 LaTeX。
+% 编译：tectonic paper_zh.tex
+% 字体：fontset=none + 按路径直载 fandol（CTAN 字体，离线可编）
+% 若已有 fandol 缓存，可改回 fontset=fandol
+\documentclass[10pt,fontset=none]{ctexart}
+\setCJKmainfont[Path=/Users/mark/Library/Fonts/, Extension=.otf, BoldFont=FandolSong-Bold]{FandolSong-Regular}
+\setCJKsansfont[Path=/Users/mark/Library/Fonts/, Extension=.otf, BoldFont=FandolHei-Bold]{FandolHei-Regular}
+\setCJKmonofont[Path=/Users/mark/Library/Fonts/, Extension=.otf]{FandolFang-Regular}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{rotating}
+\usepackage{xurl}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\setlength{\tabcolsep}{4pt}
+
+\title{世界模型：定义、澄清、区别与边界}
+
+\author{余玉桂\\ 余玉桂战略研究室\\ \texttt{they4897@gmail.com}}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent“世界模型”在 2024 至 2026 年间从强化学习教科书的技术术语膨胀为产业与学界共用的高频词，而学界同时承认对它“根本是什么、该预测什么、该怎么建”没有共识。本文把 AGI 人本拟合论的概念工具延伸到这一术语上。（1）\textbf{定义}：世界模型是功能概念而非实体概念——一个系统相对环境与行动空间拥有世界模型，当且仅当它具备以行动为条件、支持干预性查询、可反复调用的预测能力；实现分三系（写入、学出、先学后写），定义的第一条件是工程训练目标函数的公共形状，第二条件来自部署侧的调用方式。（2）\textbf{澄清}：命名竞争的谱系分析表明该术语以含混取胜；其混乱主要不是语义含混而是\emph{位置多态}——同一功能概念落在四个位置上（智能体的组件、评测者的基准、规划者的表征、训练者的模拟环境），调用形态有四（展开、评分、查询、训练场与生成），现有定义之争可统一解释为位置之争；《四个概念，四种类型》归纳的三种非法滑动在本话语中各有对应形态，另有一种位置混淆为本研究特有。（3）\textbf{分析}：三个论断与一条界限——位置论断（视角是位置属性而非概念内在属性）；概率论断（概率比重是观测位置的函数；校准是概率实现的检验标准）；任务论断（环境成员按任务来源三分；物理规律覆盖“物”的动力学，物理用尽之处即“者”起之处）；自改进的界限（可持续的递归自改进必须保留真实数据掺配，自产自评的系统失去可检验性）。（4）\textbf{区别与边界}：世界模型与智能的判定对象不同（策略对模型，会做与会算互不蕴含），与通用人工智能判准错位、组件进步不可转账；对“智能世界模型”类终局复合概念给出四路合流、四要件与三道边界的结构分析。文末给出八条证伪条款与面向新案例的准入协议。
+\end{abstract}
+
+\medskip
+\noindent\textbf{关键词：} 世界模型；通用人工智能；AGI 人本拟合论；概念类型学；位置多态；进步转账错觉；概率校准；递归自改进
+
+\section{引言}\label{sec:intro}
+
+“世界模型”一词的使用频率在 2024 至 2026 年间急剧上升，指称范围同步膨胀，判别力同步下降。2024 年 2 月，OpenAI 以“视频生成模型作为世界模拟器”为题发布技术报告\cite{openai2024sora}；同年 12 月，DeepMind 将 Genie~2 称为“大规模基础世界模型”\cite{deepmind2024genie2}；2025 至 2026 年间，驾驶、机器人、空间智能与智能体环境模拟领域相继以世界模型自称，多家车企将云端场景生成器命名为世界模型。与此相对，学界的综述承认：“对世界模型根本是什么、该预测什么、该怎么建，没有共识”\cite{chen2026definition}。同一时期的多份综述各以生成未来、潜空间预测或内部模拟器为纲\cite{ding2024understanding,li2025embodied}——分歧不在细节，在词义本身。
+
+这一局面与《四个概念，四种类型》\cite{yu2026fourconcepts}所处理的问题同构：四个智能类术语每天使用而层次边界没有权威版本，其根源是概念类型混淆。本工作把该文的类型学与《拟合实践，而非作品：AGI 人本拟合论》\cite{yu2026fitting}确立的拟合论立场延伸到“世界模型”这一拥挤术语。
+
+本文结构如下。第~\ref{sec:definition}~节给出定义、推导与概念类型；第~\ref{sec:clarify}~节从命名谱系进入位置多态与调用形态，并列出非法滑动清单；第~\ref{sec:propositions}~节给出三个论断与自改进的界限；第~\ref{sec:distinction}~节区分世界模型与智能及通用人工智能；第~\ref{sec:terminal}~节分析“智能世界模型”类终局概念；第~\ref{sec:falsifiable}~节给出证伪条款与准入协议，结语交代与既有工作的关系。
+
+本文的核心主张可以一句陈述：\textbf{世界模型不是一类实体，而是一种功能}。“$X$ 是不是世界模型”的恰当形式是：$X$ 是否以世界模型的方式在工作——以行动为条件、供干预调用、落在哪个位置、是否闭合。
+
+\section{定义：条件、推导与类型}\label{sec:definition}
+
+\subsection{功能定义}\label{sec:functional}
+
+\textbf{定义 1（世界模型）。}系统 $S$ 相对环境 $E$ 与行动空间 $A$ 拥有世界模型，当且仅当：
+
+\begin{itemize}
+\item[（C1）]\textbf{行动条件性。}$S$ 的预测以行动为条件变量：预测“若做 $a$，环境将如何响应”，即在形式上提供以（观测 $o$，行动 $a$）为条件的预测分布 $p(\cdot\mid o,a)$，而非无条件地续写观测序列；
+\item[（C2）]\textbf{可调用性。}该预测能力作为组件可被反复调用，且支持干预性查询与反事实查询：改变条件（换行动、改场景），预测随之而变。
+\end{itemize}
+
+两条条件各有排除对象。C1 排除纯生成：一段视频输出不构成世界模型；只有当生成以行动为条件、随输入而变时，生成系统才实现世界模型。这一排除有理论结果支撑：仅以事实转移训练的模型，无论数据与容量多大，都无法自行回答反事实查询\cite{balestriero2026counterfactual}。C2 排除一次性产物：世界模型是可反复调用的能力，不是一次交付的作品。
+定义不预设三件事。不预设实现：写入、学出与先学后写是同一功能概念的三系实现（第~\ref{sec:derivation}~节）。不预设载体：网络权重、求解器代码、语言模型的参数乃至大脑（自 Tolman\cite{tolman1948}、O'Keefe 与 Nadel\cite{okeefe1978}以降的认知地图传统）皆可为载体。不预设视角：视角不出现在定义中——它是位置的函数（第~\ref{sec:positionth}~节）。这一克制的动机在于：现有定义之争大多把某一位置上的实现细节（像素生成、潜空间、三维结构、语言）写进定义；本文将定义收紧到功能，其余交给论断与位置去解释。
+
+\subsection{推导与实现}\label{sec:derivation}
+
+本定义并非先验构造，其推导路径是：从工程训练实践的公共形状抽象出 C1，从部署侧的使用方式提炼出 C2。
+
+工程侧训练世界模型的做法已收敛为两段式流程。第一段把观测变为可预测的表示：生成路线先训练压缩器（离散 token 或潜变量，如 Cosmos 的分词器\cite{nvidia2025cosmos}）；JEPA 路线直接在被遮蔽块的表征上工作，回避像素重建\cite{meta2025vjepa2}。第二段在表示上训练条件预测：各实现的损失函数不同，形状相同——都以（历史观测，行动）为条件预测下一观测的表示（表~\ref{tab:training}）。
+
+\begin{table}[htbp]
+\centering\small
+\caption{学出实现的四大家族：训练目标与行动来源}
+\label{tab:training}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+实现家族 & 训练目标函数 & 行动变量来源 \\
+\midrule
+自回归 token（Genie、LWM） & 下一/遮蔽 token 交叉熵 & 潜行动模型从无标注视频逆推\cite{deepmind2025genie3} \\
+扩散/流匹配（GAIA-2、Cosmos-Predict 2.5） & 潜空间去噪或流匹配损失 & 自车轨迹与多机位条件\cite{wayve2025gaia2,nvidia2025cosmos} \\
+JEPA（V-JEPA 2-AC） & 被遮蔽块表征的回归 & 本体感知与末端位姿\cite{meta2025vjepa2} \\
+递归状态空间（Dreamer 系） & 变分下界加奖励头 & 本体感知与控制输入\cite{hafner2025inside} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+抽象发生在第二段：剥去各家的表示选择与损失形式，剩下的公共形状正是“以行动为条件的预测”——C1 由此而来。部分可观测马尔可夫决策过程教科书中转移模型 $p(o'\mid o,a)$ 的写法\cite{kaelbling1998pomdp,sutton2018rl}是同一形状的记号化。C1 是工程训练目标的公分母，不是哲学偏好。C2 来自训练侧之外：训练所得的条件预测在部署中被反复调用——想象展开、规划回路、场景生成、离线评测。论文与教科书对世界模型的记述止于训练目标，使用方式不在其内；C2 把缺的这一半写进定义。“是否可调用、供谁调用”属于功能定位问题，即第~\ref{sec:positions}~节的位置多态。
+
+按规则的来源与固定方式，实现分三系（表~\ref{tab:impl}）。\textbf{写入}：规则由人写出——物理引擎以确定性积分与约束求解运行已知方程，是功能概念最老的实现，也是方差被假设为零的特例（第~\ref{sec:probability}~节）。\textbf{学出}：规则从数据拟合而来——Genie、V-JEPA、Cosmos、InternW0\cite{internw0}。\textbf{先学后写}：规则先从交互中归纳、再形式化固定——代数世界模型（AWM）探索规则不公开的陌生环境，把机制猜测写成可执行假设并对观测持续检验修正，经范畴论指导的变换组织为带类型的对象与规则，最终写入 Lean~4 形式系统并构造证明\cite{awm2026}。它由此把 C2 推到上界：不只预测某次干预的结果，而能证明在给定行动预算内不存在任何合法获胜序列——对干预空间的全称否定。在构造的两个不可通关变体上，AWM 六次运行全部给出通过内核检查的封闭证明，对照基线十二次运行均未给出\cite{awm2026}。
+
+\begin{table}[htbp]
+\centering\small
+\caption{三系实现}
+\label{tab:impl}
+\begin{tabularx}{\textwidth}{llll}
+\toprule
+实现系 & 规则来源 & 代表 & 推理方差 \\
+\midrule
+写入 & 先验给定 & 物理引擎 & 零（理想化） \\
+学出 & 从数据拟合 & Genie、V-JEPA、Cosmos & 正 \\
+先学后写 & 归纳后冻结 & 代数世界模型\cite{awm2026} & 推理零方差，建模有误差 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+先学后写一系自带一条警示：证明可以严格合规则，而规则仍可能不合环境——AWM 初始的六个获胜成本下界只有四个与真实最低成本相符，经反馈修正后才全部转正\cite{awm2026}。推理零方差不等于建模零误差（第~\ref{sec:probability}~节）。
+
+定义的判别力见表~\ref{tab:boundary}。气象集合预报常被归入世界模型，但它缺少行动条件——人对大气没有可用的行动变量——是近亲（条件预测器），而非世界模型。
+
+\begin{table}[htbp]
+\centering\small
+\caption{边界案例}
+\label{tab:boundary}
+\begin{tabularx}{\textwidth}{lllY}
+\toprule
+系统 & C1 & C2 & 判定 \\
+\midrule
+物理引擎（MuJoCo 等） & 满足 & 满足 & 写入实现的世界模型 \\
+交互式生成（Genie、Oasis） & 满足 & 会话级满足 & 学出实现；记忆受限\cite{deepmind2026genie4} \\
+纯视频生成（一次性输出） & 不满足 & 不满足 & 素材，非世界模型 \\
+驾驶占用预测（BEV/占用网格） & 满足 & 满足 & 表征位置的世界模型 \\
+语言环境模拟\cite{qwen2026agentworld} & 满足 & 满足 & 模拟环境位置的世界模型 \\
+集合天气预报（GenCast） & 不满足 & 满足 & 预测器而非世界模型 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{概念类型}\label{sec:concepttype}
+
+《四个概念，四种类型》\cite{yu2026fourconcepts}判定：智能是能力概念、人类智能是样本概念、人工智能是造物概念、通用人工智能是参照系概念，且每一类概念的“定义完成”形态不同。本文补充第五行：\textbf{世界模型是功能概念}——其定义完成形态是一份工程规格：功能（行动条件预测）$\times$ 位置（落在何处）$\times$ 判据（用什么检验），而不是对内在本质的揭示。“世界模型本质上是什么”因此是一个在提法上就拒绝回答的问题。第~\ref{sec:clarify}~节的三阵营定义之争，在类型学的视角下是同一错误的三个变体：各自把本位置上的产品——生成器、潜空间预测器、内部模拟器——当作概念本身。
+
+\section{澄清：命名、位置与误用}\label{sec:clarify}
+
+\subsection{命名竞争与适存条款}\label{sec:naming}
+
+该术语比它的流行史老，且并非出自单一源头——至少四条脉络汇成今天的用法。宇宙学在二十世纪三十年代已将 world model 用作标准词，Milne 的专著即以“世界结构”为题\cite{milne1935}。控制论传统使用 internal model——好调节器必是受控系统的模型，这是 Conant 与 Ashby 1970 年的定理，标题措辞是“必须是”（must be）而非常被转述的“包含”\cite{conant1970}。工程一侧，美国国家标准与技术研究院的实时控制体系（RCS 谱系）在二十世纪八九十年代为控制节点设置了正式的世界模型模块，维护世界过去、现在与未来的状态估计\cite{albus2002rcs}。认知科学的正典源头通常追溯到 Craik 1943 年——生物体头脑中携带“外部现实的小规模模型”\cite{craik1943}；但 Craik 本人并未使用“世界模型”这一短语，这次认祖是 2022 年才完成的回溯\cite{lecun2022path}。
+
+神经网络谱系的自述是另一支：Schmidhuber 1990 年的技术报告被其本人后来记述为以循环网络做世界模型规划的起点（原报告标题并无此词）\cite{schmidhuber1990}；2018 年，Ha 与 Schmidhuber 以《World Models》为题定名引爆\cite{ha2018world}，开篇引用的却是系统动力学的 Forrester\cite{forrester1971}；2022 年 LeCun 的路线图接过 Craik 完成正典化\cite{lecun2022path}；2024 至 2026 年进入品牌化：视频派说 world simulators\cite{openai2024sora}，DeepMind 说 foundation world model\cite{deepmind2025genie3}，英伟达造新词 world foundation model\cite{nvidia2025cosmos}。
+
+\begin{table}[htbp]
+\centering\small
+\caption{竞争名称的输赢}
+\label{tab:names}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+竞争名称 & 使用者 & 结局 \\
+\midrule
+环境模型 & 强化学习教科书\cite{sutton2018rl} & 学界标准词，大众传播失势 \\
+动力学模型 & 基于模型的强化学习圈 & 技术圈内存活，未出圈 \\
+内部模型 & 控制论 & 学科内部存活 \\
+世界模拟器 & 视频派\cite{openai2024sora} & 声量大，已让位于世界模型 \\
+世界基座模型 & 英伟达\cite{nvidia2025cosmos} & 新词，限于物理 AI 圈 \\
+空间智能 & World Labs & 品牌词，与世界模型并用 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+表~\ref{tab:names}的输赢格局表明：命名竞争奖励可认领，不奖励准确。精确的名称把认领者挡在圈外——动力学模型只属于一个技术圈；“世界模型”松到各家都能认领：生成视频派、潜空间派、机器人、驾驶全都自称过它。\emph{含混即优势}——这是第~\ref{sec:positions}~节位置多态的词汇学推论：一个词能容纳四个位置，因为它从未承诺只装一个。
+
+最后陈述定义与词的关系（\textbf{适存条款}）。本定义绑定的是功能，不是词：名称的指称范围可以漂移，功能的判定条件不随名称漂移——任何未来号称“智能世界模型”而可用的系统，其内部必须实现两条条件，否则它连世界都不是。若该词完成语义漂移、固化指代智能世界系统之类的复合目标（第~\ref{sec:terminal}~节），功能概念可退守既有学名（动作条件预测模型、环境模型；表~\ref{tab:names}即备选库）。词可失，概念不失，本文的分析随概念迁移。指称膨胀每持续一轮，可判定的功能规格就稀缺一分。
+
+\subsection{位置多态：四个位置与四种调用}\label{sec:positions}
+
+世界模型的有用性在于：它将试错的开支从真实世界转移到模型内部——真实侧的试错昂贵、缓慢、危险且不可重复，模型侧便宜、可并行、可回滚。但这一功能为谁所用、如何被用，分出四个位置。本文提出：该词的混乱主要不是语义含混，而是\textbf{位置多态}——同一功能概念落在四个位置上，四个位置共享功能核心（行动条件预测），但调用形态、视角、判据与成功标准各不相同：
+
+\begin{itemize}
+\item \textbf{组件}（智能体侧）：为智能体的想象与规划服务。调用形态是\emph{展开}——给定观测与候选行动序列，循环调用预测得到想象轨迹：Dreamer 系直接在世界模型内部训练策略\cite{hafner2025inside}，V-JEPA 2-AC 以腕相机数据做动作条件后训练\cite{meta2025vjepa2}。
+\item \textbf{评测基准}（评测侧）：为检验与安全服务。调用形态是\emph{评分}——把候选行动或策略输入世界模型，对预测结果打分，免真机执行：机器人界以此离线给策略排序\cite{onex2026worldmodel}，驾驶界以此做安全场景生成与反事实评测\cite{wayve2025gaia2}。
+\item \textbf{状态表征}（规划侧）：为表征与规划服务。调用形态是\emph{查询}——显式状态表示供规划与占用推理\cite{tolman1948,okeefe1978}。
+\item \textbf{模拟环境}（环境侧）：为环境生成与智能体训练场服务。调用形态是\emph{训练场与生成}——世界模型本身作为环境供智能体强化学习\cite{qwen2026agentworld,deepmind2025genie3}，或以世界模型合成训练数据\cite{nvidia2025synthetic}。
+\end{itemize}
+
+四种调用形态共同的结构即定义的兑现：每次调用都改变一个行动变量、观察预测随之而变——干预查询就是调用本身。
+
+位置多态解释两个久拖不决的现象。其一，\emph{为何没有共识}：文献中的三阵营——生成视频派\cite{openai2024sora}、潜空间派\cite{lecun2022path}、内部模拟器派\cite{chen2026definition}——各自在为自己所处的位置下定义：生成视频派为组件与模拟环境位置的产品辩护，潜空间派为组件位置的实现路线辩护，内部模拟器派为表征位置的状态表示辩护。定义之争实为位置之争，而四个位置并育不冲突，故争论不收敛也无需收敛。其二，\emph{为何该词在产业话语中通胀}：以总词命名产品，比交代它落在哪个位置便宜——厂商说“世界模型”时省略的恰是“装在哪、干什么”，而这正是全部信息所在。
+
+\textbf{位置集是开放的}：四个位置是当前已识别项，不是封闭清单——新位置可依第~\ref{sec:admission}~节准入协议进入（例如，若数据引擎从模拟环境位置独立出来，加一行即可），位置多态的解释力不依赖清单的封闭性。
+
+\subsection{非法滑动清单}\label{sec:slips}
+
+《四个概念，四种类型》\cite{yu2026fourconcepts}归纳的三种非法滑动在世界模型话语中各有对应形态，另有第四种为本话语特有：
+
+\begin{enumerate}
+\item \textbf{操作主义}（测量冒充定义）：以生成质量冒充预测能力——“生成了像世界的视频”被当作“拥有世界模型”的证据。实证反驳已有：Physics-IQ 基准显示视觉保真度与物理理解基本不相关\cite{motamed2025physicsiq}。
+\item \textbf{部分谬误}（机制冒充能力定位）：以产品冒充功能——把某个仿真器、生成器或数据引擎（产品）当作世界模型（功能）的同义词。
+\item \textbf{判据升格}（工程判据冒充概念内容）：分辨率、帧率、会话时长是组件位置上的性能参数，在话语中被升格为世界模型的定义要素。
+\item \textbf{位置混淆}（本话语特有）：把一个位置的成功当作另一个位置的成果——云端仿真器的规模被当作智能体侧预测能力的证据，或交互模型的进展被当作仿真器已至的证明。
+\end{enumerate}
+
+\section{三个论断与一条界限}\label{sec:propositions}
+
+\subsection{位置论断：视角由位置决定}\label{sec:positionth}
+
+形式层的根源在教科书：马尔可夫决策过程的状态是全知的理想化描述，部分可观测马尔可夫决策过程的观测才是智能体实际所见，信念状态则由第一人称的记忆补足\cite{sutton2018rl,kaelbling1998pomdp}。组件位置从定义上站在第一人称：机器人自身相机、腕相机、头部相机\cite{meta2025vjepa2}。表征位置与基准位置生成上帝视角：鸟瞰表示、固定多机位、云端全知评测——相机在那里是条件变量而非身体\cite{wayve2025gaia2}。模拟环境位置则生成第三种视角：\textbf{无身相机}——视角与身体解耦的自由取景。Genie~4 的官方示例同时收录两种提示词——“相机即骑手之眼”与“相机独立自由移动”\cite{deepmind2026genie4}——无身相机由此从涌现现象升格为产品特性。
+
+认知科学为位置论断提供了最深的确证：大脑的“上帝视角地图”（世界坐标系的定位与网格系统）是从第一人称运动经验中习得的\cite{tolman1948,okeefe1978}——上帝视角不是独立的观察位置，而是第一人称经验的压缩产物。这与形式层严格同构：表征位置的显式状态，归根结底从组件位置的观测流中学出。
+
+位置论断的表述：\textbf{视角不是世界模型的内在属性，而是位置属性}。“世界模型是第一人称还是上帝视角”作为关于概念的问题不成立；作为关于具体系统的问题，答案由它所处的位置决定。
+
+\subsection{概率论断：概率比重是观测位置的函数}\label{sec:probability}
+
+世界模型为何以概率计算而物理引擎不需要？四个来源：部分可观测（观测者只掌握局部信息）、多值未来（同一行动下多个结局都合理）、学习误差（拟合所得的参数带不确定）、混沌（确定性方程产生不可预测的轨迹\cite{lorenz1963}）。学习层还有一个更深的机制：概率藏在损失函数里——均方回归的最优解是条件期望，即对多种合理未来的平均；多值未来被平均成模糊，是早期视频预测的典型失稳方式\cite{mathieu2016video}；扩散模型以保留整个预测分布为代价换回清晰\cite{ho2020ddpm}。
+
+由此得到概率论断：\textbf{概率比重是观测位置的函数}。方程已知、初值给定、误差可忽略时（写入实现的便利位置），比重趋于零——物理引擎是方差被假设为零的世界模型；从第一人称观测位置出发，比重必然为正。当前生成式世界模型的架构谱系可读作概率比重的梯度：观测流架构（世界即正在生成的画面，概率比重最大）；叙事态加渲染架构（Genie 4 以语言模型的叙事计划扮演世界状态，上帝视角被外包给语言模型——但语言态本身仍是概率的，且官方同时承认物体持久性随时间漂移：漂移正是无状态逐帧生成的指纹\cite{deepmind2026genie4}）；世界态加渲染架构（显式状态加视角投影：引擎、持久三维、占用网格，比重最低）。
+
+概率论断的判据推论：概率实现的检验标准是\textbf{校准}（预测分布对得上真实发生的频率），单值答案的对错在多值未来面前不再够用。先学后写一系是这条推论的符号系映照：推理零方差（Lean 内核检查）与建模有误差（下界初始四对六）要分开记——证明合规则是推理层的事，规则合环境是校准层的事。
+
+\subsection{任务论断：物理用尽之处即“者”起之处}\label{sec:task}
+
+环境成员按\textbf{任务来源}三分：\emph{自指任务}（生命体：维持自身组织——自创生传统将生命定义为递归再生产自身组件的网络\cite{varela1974}；施动因封闭传统给出更锋利的判据：生命的原因链由系统自产，物体的原因链由外部给入\cite{rosen1991}）；\emph{实践指派}（物体在实践中的角色：可供性传统——物体的“用途”由实践位置授予）；\emph{无任务}（纯物理对象）。
+
+认知对应：人类婴儿以自推进与目标导向区分“者”与“物”——物体受连贯、连续、接触三原则约束，智能体被表征为行为目标导向且偶联响应的实体\cite{spelke2007core}；纯几何运动即可触发意图归因\cite{heider1944}。哲学对应：物理立场、设计立场、意向立场三种预测策略的选用\cite{dennett1987}——“者/物”之别取决于预测策略，不是本体论裁决。
+
+技术现状是三种不切分：像素路线把角色当画面（Genie~3 官方承认“多个独立智能体的复杂交互建模仍是公开挑战”\cite{deepmind2025genie3}）；物体中心路线有物无者（槽位注意力系：实体性来自持久性与外观，与目标无关\cite{locatello2020slot}）；驾驶路线让智能体从条件端进入（智能体配置作为条件输入\cite{wayve2025gaia2}——智能体由标注授予，不是模型认出的）。将“者”纳入世界模型的工作已经起步：心智建模路线将智能体定义为心智状态可建模者\cite{rabinowitz2018tom}；社会世界模型显式建模隐藏心理状态，在社交推理基准上较对照模型大幅提升\cite{liu2025swm}；2025 年的一篇立场论文直言：物理动力学与社会动力学“主要处于彼此分离的孤岛”，统一是“世界模型发展的下一个关键前沿”\cite{zhang2025unification}。架构层的实现已经出现：Duo 以联合训练的两个模块将主体内嵌于世界模型——Intent 作决策中枢，在每个约 0.7 秒的时间块自主决定开口或等待；Realization 生成与之因果同步的视听行为\cite{duo2026}。
+
+任务论断的表述：\textbf{物理规律覆盖“物”的动力学；物理用尽之处即“者”起之处}——者的行为须按三种立场分层预测（定律、内置程序、信念与欲望）。这为《世界模型之问》\cite{yu2026worldmodelq}的判别式“智能的检验发生在物理用尽之处”提供了结构基础：物理用尽之处正是者物之分处；拟合对象之分——成片是实践的结果，交互轨迹是实践之流——正是任务论断在数据侧的投影。
+
+\subsection{自改进的界限：递归世界模型的两条预言}\label{sec:selfimprove}
+
+递归自改进的世界模型——系统在自己的想象里训练自己——是当前的讨论前沿。定义对此保持沉默是设计使然：C1 与 C2 是功能判据，不管供给端——谁训练的、经多少轮自我改进，不改变一个系统是不是世界模型。但框架对可持续性给出两条可检验的预言。
+
+\textbf{预言一（坍塌锚点）：可持续的递归自改进必须保留真实数据的掺配。}闭环自我喂养的分布退化已有理论与实证的反复确认\cite{shumailov2024}；每一代掺入真实数据即可阻止坍塌，亦有理论保证\cite{gerstgrasser2024}。这条预言与《拟合实践：前沿模型训练的数据方法论》\cite{yu2026methodology}的数据分层是同一枚硬币的两面：世界模型造的合成数据（生成形态）可以喂给策略，但喂给世界模型自己时，纯合成的食谱不可持续。
+
+\textbf{预言二（校准不能自证）：自产自评的系统失去可检验性。}校准要拿预测分布对照环境真实发生的频率（第~\ref{sec:probability}~节）——执行这番对照的一方必须在世界之外。若改进回路里的误差信号全部来自系统自身，它要么随漂移退化（预言一的路径），要么在自我评判中变得不可检验：没有任何外部判据能裁决它是否还在变好。Dreamer 系是现成的对照：策略在世界模型的想象展开里训练——内部循环闭合；世界模型本身始终由真实交互数据训练与校准——外部回路从不闭合\cite{hafner2025inside}。递归自改进的可持续形态就是这个结构，而非全封闭。
+
+两条预言合为一句：\textbf{世界模型可以参与训练自己，但不能只由自己认证}。其证伪条件见第~\ref{sec:falsification}~节第 7 条。
+
+\section{与智能及通用人工智能的区别}\label{sec:distinction}
+
+\subsection{与智能的区分：策略对模型}\label{sec:policy}
+
+一个自然的疑问：本定义与智能的定义高度相似——两者共享同一套语汇：行动、干预、可纠正。区别不在语汇，在判定对象。《四个概念，四种类型》\cite{yu2026fourconcepts}判定：智能是能力概念，其谓词的归属层级是系统与环境的组合，回答“系统在什么范围内能做到什么”，以度量形态收尾；世界模型是功能概念（第~\ref{sec:concepttype}~节），以工程规格收尾。两者分居策略与模型两端：
+
+（1）判定对象。智能判定行动者的产出——它自己做得对不对（可靠、接得住反事实、指出错能改对）；世界模型规格化预测——环境将如何响应行动。以决策论的记号：智能的判准落在策略 $\pi(a\mid o)$ 的产出质量上，世界模型的规格落在转移模型 $p(o'\mid o,a)$ 上。
+
+（2）双向不蕴含。会做不蕴含会算：无模型策略（反射式的训练策略）行为合格，却给不出任何环境响应预测；会算不蕴含会做：把杯子坠落预测得分毫不差的模拟器，自己接不住那只杯子。若两个定义重复，这两个方向至少一个不可能；它们都是常态。
+
+（3）行动的地位相反。世界模型定义把行动当作输入变量（吃进去的条件）；智能判定把行动当作输出（做出来的所为）。
+
+相似因此是继承而非重复：《拟合实践，而非作品》\cite{yu2026fitting}为一切功能概念从实践侧取材，两个定义共享的语汇由此而来，而谓词落在不同对象上。《四个概念，四种类型》的证伪条款预留了“组件级能力的严格定义”作为部分谬误诊断的修订条件——本定义正是这样一个组件级规格：它规格化组件自身的功能（预测质量以校准为判据），而不把系统级的能力谓词归属给组件，故不触发部分谬误。
+
+\subsection{范畴：不同类型的概念}\label{sec:category}
+
+通用人工智能是参照系概念——其定义完成形态是参照系的选定，以人类实践谱系为参照\cite{yu2026fourconcepts}；世界模型是功能概念——其定义完成形态是一份工程规格。跨类型的比较“世界模型是不是 AGI”在提法上不成立，正如“某个零件是不是一辆车”不成立。恰当的提法是：某系统的世界模型组件是否服务于该系统的总体判定——落在何处、以何种方式。Genie~4 官方称“理解并模拟世界是构建 AGI 的关键一环”\cite{deepmind2026genie4}——作为组件论断可以辩护，作为路线论断（第~\ref{sec:transfer}~节）则需另行论证。
+
+\subsection{判准：判准错位}\label{sec:criteria}
+
+世界模型的判据是局部的：组件位置看校准与干预查询通过率，基准位置看分布覆盖与场景保真，表征位置看状态表征的规划效用。通用人工智能的判定是总体的：覆盖人类实践谱系的全谱与全程\cite{yu2026fitting}。两层判据不可互通：Physics-IQ 的负结果（视觉保真与物理理解不相关\cite{motamed2025physicsiq}）是判准错位的局部实证——素材侧指标不判组件，组件指标不判系统。一个系统可以在物理基准上接近满分而在实践谱系上接近零覆盖；反之，一个系统的世界模型组件平平，仍可能凭其他组件在特定实践域内取得总体合格的成绩。
+
+\subsection{转账：进步转账错觉的世界模型轴}\label{sec:transfer}
+
+《两个不同的目标》\cite{yu2026twogoals}诊断：人工智能的可测量进步被悄悄记作机器之心的进步——进步转账错觉。本文指出其世界模型轴的新案例：世界模型的组件里程碑被记作通用人工智能的总体里程碑。“世界模型即 AGI 之路”的话语、产品发布与 AGI 倒计时的联动，是同一机制在运转。转账错觉双向皆误：正向把组件完成当系统完成；反向把组件失败当系统失败——生成式世界的漂移被引为“AGI 无望”的证据，与把高分当“AGI 将至”共享同一个错误。组件进步不可转账，因为判准错位（第~\ref{sec:criteria}~节）：两组判据不可通约，一方的进步无法读作另一方的进步。
+
+\subsection{组件：使用闭合}\label{sec:closure}
+
+世界模型组件的地位由\textbf{使用闭合}授予：预测被消费、被检验、被纠正——想象演练、模拟训练、基准检验都是闭合形态，误差有去处，组件成为智能系统的承重部分；独自渲染、误差无人消费，它是一台更华丽的引擎，作为工具仍有完整价值。由此得到本文对路线之争的裁决方式：生成视频派与潜空间派都在造组件，分野在位置与闭合方式，不在“谁更接近 AGI”。恰当的问题不是是否需要世界模型，而是\textbf{落在何处、是否闭合}。表~\ref{tab:summary}汇总两级概念的区别。
+
+\begin{table}[htbp]
+\centering\small
+\caption{世界模型与通用人工智能的区别}
+\label{tab:summary}
+\begin{tabularx}{\textwidth}{lYY}
+\toprule
+维度 & 世界模型 & 通用人工智能 \\
+\midrule
+概念类型 & 功能概念 & 参照系概念（总体判定） \\
+定义完成形态 & 工程规格（功能$\times$位置$\times$判据） & 参照系选定（实践谱系） \\
+判定 & 局部、可分级 & 总体、须全套 \\
+进步 & 组件进步 & 不可由组件进步转账 \\
+关系 & AGI 系统的候选承重组件 & 其判定不经世界模型的内部指标 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{终局形态：“智能世界模型”}\label{sec:terminal}
+
+产业的合流正在产生一个新的复合词：既要环境预测又要智能的“智能世界模型”，或径称“通用人工智能世界模型”。本节用定义与三个论断解剖这一终局概念：它是什么（四路合流与四要件），它撞上什么（三道边界）。
+
+\subsection{四路合流}\label{sec:routes}
+
+\textbf{谷歌栈}是当前最完整的拼图：Genie 作世界\cite{deepmind2026genie4}，SIMA~2 作居民——在 Genie~3 生成的世界里训练并自举改进\cite{deepmind2025sima2}，Gemini 在环内审片改计划作导演\cite{deepmind2026genie4}。其官方使命句“理解并模拟世界是构建 AGI 的关键一环”\cite{deepmind2026genie4}即此目标的表述。\textbf{底座路线}（李飞飞一系）方向相同而次序互补：世界先于智能——持久、可编辑的三维世界作底座，智能长在底座之上\cite{worldlabs2025marble,worldlabs2026atlas}。\textbf{组件路线}（LeCun 一系）与它们方向相反：智能优先，世界模型是智能的组件，而非世界是智能的容器\cite{lecun2022path}；层级化的动作条件 JEPA 世界模型是这条路线在实现层的新近推进\cite{zhang2026hjepa}。第四路与组件路线同向而更激进：双向世界模型先造居民、后配世界——主体与世界在训练中内生耦合，而世界暂时只是对话的时空\cite{duo2026}。
+
+四条路在组装次序上分成两队：\textbf{物先者后}（谷歌栈与底座路线——先把世界做好，再请居民进来）与\textbf{智能先行}（组件路线与双向世界模型——先有能动的智能，再把世界加厚）。两队的合流点是同样的四要件（第~\ref{sec:four}~节）。“智能世界模型”的实指在前一队，但后一队提示这一终局并非只有一种构造次序。
+
+\subsection{四要件}\label{sec:four}
+
+若两队汇流、四要件齐备，构造出的是这样一个系统：\textbf{可进入}（实时交互）；\textbf{自持物理}（内部一致的因果链——跨过状态性，不再漂移，即写入实现的状态品质以学出的方式获得）；\textbf{智能居民}（“者”完全内嵌且能自举改进——模拟环境位置训练场形态的极致）；\textbf{持续运行}（长时程一致——当前全部公开演示的共同短板\cite{deepmind2026genie4}）。四要件恰好分别落在本文的四个分析维度上：交互即调用（第~\ref{sec:positions}~节），状态即实现谱系（第~\ref{sec:derivation}~节），居民即任务论断（第~\ref{sec:task}~节），持续即概率论断的长时程面（第~\ref{sec:probability}~节）。终局形态不是框架装不下的新事物，而是四个维度各自推到头的交点。
+
+\subsection{三道边界}\label{sec:boundaries}
+
+其一，概念层：\textbf{是最完整的实现，不是新概念}。构造出的世界集模拟环境、组件与状态表征于一身，是世界模型谱系中最完整的实现——“智能世界模型”若指产品只是命名（第~\ref{sec:naming}~节），若指判据是范畴错误（第~\ref{sec:category}~节：功能概念与参照系概念的判据互不通用）。
+
+其二，判准层：\textbf{判准止于交互}。构造出的世界能被检验的只有交互行为：一致性、物理响应、居民表现。“里面有没有真的世界、真的心”重演《两个不同的目标》\cite{yu2026twogoals}所诊断的第三人称判据缺失——造世界遇到的判据缺失与造心遇到的判据缺失是同一种缺失：居民若真有体验，无法从外面验证；若能验证，那就只是可检验的功能。
+
+其三，归属层：\textbf{居民的智能属于那方世界}。《四个概念，四种类型》\cite{yu2026fourconcepts}的判据——能力谓词的归属是系统与环境的组合——在此的推论是：居民的智能相对那方世界成立且为真，但不能归属到我们的世界；跨界迁移要求两界规律与实践同构，而同构的检验就是与我们校准——恰好撞上第~\ref{sec:selfimprove}~节的两条预言：不与外部校准的自持世界，要么退化，要么失去可检验性。
+
+概括为一句话：构造一个自洽的世界并非最难的部分；最难的部分是构造一个其状态可与外部世界的观测相校准的世界。
+
+\section{可反驳性：证伪条款与准入协议}\label{sec:falsifiable}
+
+\subsection{证伪条款}\label{sec:falsification}
+
+\begin{enumerate}
+\item \textbf{定义的条件一}：若出现不满足行动条件性却仍支持干预性查询的系统——即无条件生成凭空获得干预响应能力——C1 作废，定义退回到可调用性单条件。
+\item \textbf{任务论断的经验支柱}：若纯视频训练的模型在同规模下于干预与反事实查询上追平动作条件、交互轨迹训练的模型，配套文章的可检验预言作废\cite{yu2026worldmodelq}，任务论断随之失去数据侧的支撑。
+\item \textbf{功能定义的必要性}：若学界收敛于一个结构性定义（以内部表征的某类结构定义世界模型），且该定义能统一四个位置并保持判别力，本文“定义完成形态是工程规格”的论断削弱。
+\item \textbf{转账的边界}：若世界模型的某项内部指标被证明与通用人工智能的总体判定同构——组件指标可以转账——第~\ref{sec:transfer}~节的区分作废。
+\item \textbf{任务三分}：若“者”的行为预测被证明可完整还原为物理规律（任务归因可物理化），第~\ref{sec:task}~节的三分作废。
+\item \textbf{位置多态}：若出现单一系统同时占据全部位置且无需区分使用语境仍保有各位置的判据——位置之分失效，位置多态论题作废，第~\ref{sec:clarify}~节的解释随之退化为对 2020 年代话语的历史注记。
+\item \textbf{自改进的界限}：若出现无外部真实数据掺配、亦无外部校准的全封闭递归自改进系统，且其预测长期保持对环境的校准——第~\ref{sec:selfimprove}~节的两条预言同时作废。
+\item \textbf{终局边界}：若构造世界中的智能居民，其能力无需该世界与外部世界校准即可迁移至其他世界——“居民的智能属于那方世界”作废，第~\ref{sec:boundaries}~节第三道边界被翻盘（此情形同时意味着一方世界的进步可读作另一方世界的进步，与第 4 条部分合流）。
+\end{enumerate}
+
+\subsection{准入协议：新案例如何进入本框架}\label{sec:admission}
+
+框架对未知保持开放，新案例按三问定位，不需要修改定义。
+
+第一问，是否通过两条条件——是否以行动为条件（C1）、可反复调用并支持干预查询（C2）。两条条件皆过，是世界模型，进入第二问；有不过者，按表~\ref{tab:boundary}的口径归类（素材、预测器、近亲），或按第~\ref{sec:slips}~节判为只是命名——词语的认领不等于概念的实现。
+
+第二问，落在何处——组件、评测基准、状态表征、模拟环境，或新位置。位置判定看服务的对象：为谁的想象、谁的检验、谁的规划、谁的训练服务。若是新位置，按开放条款登记：说明它为谁服务、判据是什么、与既有位置的分界。
+
+第三问，如何闭合——展开、评分、查询、训练场与生成，何种调用形态、误差流向哪里。误差无人消费的，是独自渲染的作品侧（第~\ref{sec:closure}~节）。
+
+三问答毕，新案例在坐标系上落位。落不进坐标系的有两种处置：挑战定义本身的（如无条件生成获得干预响应），触发证伪条款 1；溢出全部现有维度的，是框架的真反例，也是下一次修订的入口。两个案例可作演示：Duo 将智能体内嵌进世界模型，落位在模拟环境位置的者物谱系一端\cite{duo2026}；代数世界模型将规则从交互归纳后写入形式系统，落位在写入实现的先学后写一系，并将 C2 推到全称判定的上界\cite{awm2026}。两个方向都未改动框架的任何一条。
+
+\section*{结语}
+
+本文的工具取自 AGI 人本拟合论：拟合论立场与作品/实践之分来自《拟合实践，而非作品》\cite{yu2026fitting}，失败数据的结构化审计来自《成功给方向，失败给精度》\cite{yu2026failure}，数据分层与掺配要件来自《拟合实践：前沿模型训练的数据方法论》\cite{yu2026methodology}，进步转账错觉与判据缺失诊断来自《两个不同的目标》\cite{yu2026twogoals}，概念类型学与非法滑动清单来自《四个概念，四种类型》\cite{yu2026fourconcepts}；《世界模型之问》\cite{yu2026worldmodelq}的三项判别式在此形式化为任务论断、定义与组件级区分。在世界模型论中，研究对象不是有待实现的终极目标，而是一种功能、一个位置、一份可以校准的预测。智能的检验不发生在渲染的逼真里，而发生在物理用尽之处、在使用闭合之中；终局形态把四个维度推到头，校准仍须在世界之外执行。这就是从拟合实践到拟合世界。
+
+\begin{thebibliography}{99}\small
+
+\bibitem{yu2026fitting}
+余玉桂. 拟合实践，而非作品：AGI 人本拟合论. Zenodo: 10.5281/zenodo.23391808, 2026.
+
+\bibitem{yu2026failure}
+余玉桂. 成功给方向，失败给精度：大模型训练中失败数据的结构化审计. Zenodo: 10.5281/zenodo.23355929, 2026.
+
+\bibitem{yu2026methodology}
+余玉桂. 拟合实践：前沿模型训练的数据方法论. Zenodo: 10.5281/zenodo.23488466, 2026.
+
+\bibitem{yu2026twogoals}
+余玉桂. 两个不同的目标：机器之心与人工智能的概念解绑. Zenodo: 10.5281/zenodo.23969047, 2026.
+
+\bibitem{yu2026fourconcepts}
+余玉桂. 四个概念，四种类型：智能、人类智能、人工智能、通用人工智能的层次、边界与转译协议. Zenodo: 10.5281/zenodo.24096362, 2026.
+
+\bibitem{yu2026worldmodelq}
+余玉桂. 世界模型之问：惊艳的 Genie 4，检验得了智能吗？配套博客文章, 2026.
+
+\bibitem{ding2024understanding}
+Ding, J., Zhang, Y., Shang, Y., et al. Understanding World or Predicting Future? A Comprehensive Survey of World Models. arXiv:2411.14499, 2024.
+
+\bibitem{li2025embodied}
+Li, X., He, X., Zhang, L., Wu, M., Li, X., \& Liu, Y. A Comprehensive Survey on World Models for Embodied AI. arXiv:2510.16732, 2025.
+
+\bibitem{chen2026definition}
+Chen, X., Guo, H., Guo, S., et al. A Definition and Roadmap for World Models. arXiv:2607.06401, 2026.
+
+\bibitem{sutton2018rl}
+Sutton, R. S., \& Barto, A. G. Reinforcement Learning: An Introduction (2nd ed.). MIT Press, 2018.
+
+\bibitem{openai2024sora}
+OpenAI. Video Generation Models as World Simulators. Technical report, 2024.
+
+\bibitem{lecun2022path}
+LeCun, Y. A Path Towards Autonomous Machine Intelligence. OpenReview, 2022.
+
+\bibitem{balestriero2026counterfactual}
+Balestriero, R., LeCun, Y., \& Varaku, K. Counterfactual World Models: JEPAs That Reason About ``What If''. arXiv:2611.24778, 2026.
+
+\bibitem{zhang2026hjepa}
+Zhang, W., Terver, B., Rabbat, M., LeCun, Y., \& Balestriero, R. H-JEPA: End-to-End Learning of Hierarchical World Models for Visual Planning. arXiv:2610.06805, 2026.
+
+\bibitem{kaelbling1998pomdp}
+Kaelbling, L. P., Littman, M. L., \& Cassandra, A. R. Planning and Acting in Partially Observable Stochastic Domains. Artificial Intelligence, 101(1--2), 1998.
+
+\bibitem{hafner2025inside}
+Hafner, D., et al. Training Agents Inside of Scalable World Models. arXiv:2509.24527, 2025.
+
+\bibitem{meta2025vjepa2}
+Meta AI. V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning. arXiv:2506.09985, 2025.
+
+\bibitem{deepmind2024genie2}
+Google DeepMind. Genie 2: A Large-Scale Foundation World Model. 2024.
+
+\bibitem{deepmind2025genie3}
+Google DeepMind. Genie 3: A New Frontier for World Models. 2025.
+
+\bibitem{deepmind2026genie4}
+Google DeepMind. Genie 4: A New Generation of World Simulation. 2026.
+
+\bibitem{deepmind2025sima2}
+SIMA Team, Google DeepMind. SIMA 2: A Generalist Embodied Agent for Virtual Worlds. arXiv:2512.04797, 2025.
+
+\bibitem{worldlabs2025marble}
+World Labs. Marble: A Multimodal World Model. 2025.
+
+\bibitem{worldlabs2026atlas}
+World Labs. Atlas: A World Model for Spatial Intelligence. 2026.
+
+\bibitem{nvidia2025cosmos}
+NVIDIA. Cosmos World Foundation Model Platform for Physical AI. arXiv:2501.03575, 2025.
+
+\bibitem{nvidia2025synthetic}
+NVIDIA. Enhance Robot Learning with Synthetic Trajectory Data Generated by World Foundation Models. Developer blog, 2025.
+
+\bibitem{onex2026worldmodel}
+1X Technologies. 1X World Model and World Model Challenge. 2024--2026; 技术报告 Generative World Modelling for Humanoids, arXiv:2510.07092.
+
+\bibitem{wayve2025gaia2}
+Wayve. GAIA-2: A Controllable Multi-Video Generative World Model. arXiv:2503.20523, 2025.
+
+\bibitem{qwen2026agentworld}
+Zuo, Y., Xiao, Z., Sheng, L., et al. Qwen-AgentWorld: Language World Models for General Agents. arXiv:2606.24597, 2026.
+
+\bibitem{internw0}
+Cai, J., Mu, Y., et al. InternW0: A Foundational Physical World Model for Efficient Real-World Interactions. arXiv:2609.27656, 2026.
+
+\bibitem{duo2026}
+Cao, H., Gong, B., Lu, G., et al. Duo: A Reciprocal World Model for Full-Duplex Interaction. arXiv:2611.15131, 2026.
+
+\bibitem{awm2026}
+Pan, G., Tan, Q., Yuan, Y., \& Yao, A. C.-C. Algebraic World Model: From Exploration to Proofs. arXiv:2610.40503, 2026.
+
+\bibitem{motamed2025physicsiq}
+Motamed, S., Culp, L., Swersky, K., Jaini, P., \& Geirhos, R. Do Generative Video Models Understand Physical Principles? arXiv:2501.09038, 2025.
+
+\bibitem{mathieu2016video}
+Mathieu, M., Couprie, C., \& LeCun, Y. Deep Multi-Scale Video Prediction Beyond Mean Square Error. ICLR 2016.
+
+\bibitem{ho2020ddpm}
+Ho, J., Jain, A., \& Abbeel, P. Denoising Diffusion Probabilistic Models. NeurIPS 2020.
+
+\bibitem{lorenz1963}
+Lorenz, E. N. Deterministic Nonperiodic Flow. Journal of the Atmospheric Sciences, 20, 1963.
+
+\bibitem{spelke2007core}
+Spelke, E. S., \& Kinzler, K. D. Core Knowledge. Developmental Science, 10(1), 2007.
+
+\bibitem{heider1944}
+Heider, F., \& Simmel, M. An Experimental Study of Apparent Behavior. American Journal of Psychology, 57(2), 1944.
+
+\bibitem{dennett1987}
+Dennett, D. C. The Intentional Stance. MIT Press, 1987.
+
+\bibitem{varela1974}
+Varela, F. G., Maturana, H. R., \& Uribe, R. Autopoiesis: The Organization of Living Systems. Biosystems, 5(4), 1974.
+
+\bibitem{rosen1991}
+Rosen, R. Life Itself. Columbia University Press, 1991.
+
+\bibitem{rabinowitz2018tom}
+Rabinowitz, N., et al. Machine Theory of Mind. ICML 2018.
+
+\bibitem{liu2025swm}
+Zhou, X., Liu, J., Yerukola, A., Kim, H., \& Sap, M. Social World Models. arXiv:2509.00559, 2025.
+
+\bibitem{zhang2025unification}
+Zhang, X., Ma, C., Huang, Y., Huang, W., Qi, S., Zhu, S.-C., Feng, X., \& Yang, Y. World Models Should Prioritize the Unification of Physical and Social Dynamics. arXiv:2510.21219, 2025; NeurIPS 2025 Position Paper Track.
+
+\bibitem{locatello2020slot}
+Locatello, F., et al. Object-Centric Learning with Slot Attention. NeurIPS 2020.
+
+\bibitem{tolman1948}
+Tolman, E. C. Cognitive Maps in Rats and Men. Psychological Review, 55(4), 1948.
+
+\bibitem{okeefe1978}
+O'Keefe, J., \& Nadel, L. The Hippocampus as a Cognitive Map. Oxford University Press, 1978.
+
+\bibitem{craik1943}
+Craik, K. J. W. The Nature of Explanation. Cambridge University Press, 1943.
+
+\bibitem{conant1970}
+Conant, R. C., \& Ashby, W. R. Every Good Regulator of a System Must Be a Model of That System. International Journal of Systems Science, 1(2), 1970.
+
+\bibitem{albus2002rcs}
+Albus, J. S., Huang, H.-M., Messina, E. R., et al. 4D/RCS Version 2.0: A Reference Model Architecture for Unmanned Vehicle Systems. NISTIR 6910, National Institute of Standards and Technology, 2002.
+
+\bibitem{schmidhuber1990}
+Schmidhuber, J. Making the World Differentiable: On Using Self-Supervised Fully Recurrent Neural Networks for Dynamic Reinforcement Learning and Planning in Non-Differentiable Environments. Technical Report FKI-126-90, TU M\"unchen, 1990; 另见作者对本报告的官方自述.
+
+\bibitem{milne1935}
+Milne, E. A. Relativity, Gravitation and World-Structure. Oxford University Press, 1935.
+
+\bibitem{forrester1971}
+Forrester, J. W. World Dynamics. Wright-Allen Press, 1971.
+
+\bibitem{shumailov2024}
+Shumailov, I., et al. AI Models Collapse When Trained on Recursively Generated Data. Nature, 631, 755--759, 2024.
+
+\bibitem{gerstgrasser2024}
+Gerstgrasser, M., et al. Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data. ICML 2024.
+
+\bibitem{ha2018world}
+Ha, D., \& Schmidhuber, J. World Models. arXiv:1803.10122, 2018.
+
+\end{thebibliography}
+
+\end{document}

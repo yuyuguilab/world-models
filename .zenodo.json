@@ -1,0 +1,37 @@
+{
+  "title": "World Models: Definition, Clarification, Distinction, and Boundaries（世界模型：定义、澄清、区别与边界）",
+  "version": "v1.0.0",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "<p>Sixth paper of the human-referential fitting theory program. Between 2024 and 2026, \"world model\" expanded from a reinforcement-learning textbook term into a high-frequency word shared by industry and the academy, without consensus on what it fundamentally is. This paper extends the program's conceptual toolkit to the term with four contributions. (1) Definition: the world model is a functional, not an entity, concept—a system has one relative to an environment and an action space iff it possesses an action-conditioned, interventional, repeatedly callable prediction capability; implementation splits into written-in, learned, and learn-then-formalize families. (2) Clarification: the confusion is not semantic vagueness but positional polymorphism—one functional concept located at four positions (agent's component, evaluator's benchmark, planner's state representation, trainer's simulated environment), with four forms of invocation; definitional disputes reduce to disputes over positions. (3) Analysis: three propositions—perspective is a property of position; the probability share is a function of the observation position, with calibration as the test standard; environment members divide by the origin of their tasks, and where physics runs out is where agents begin—plus a limit on recursive self-improvement: sustainable self-improvement must retain real-data admixture, and calibration cannot self-certify. (4) Distinctions: from intelligence (policy versus model; acting and predicting do not imply each other) and from AGI (criterial mismatch; component progress is non-transferable), with a structural analysis of the terminal \"intelligent world model\" in four routes, four requirements, and three boundaries. Eight falsifiability clauses and an admission protocol for new cases close the paper.</p>",
+  "creators": [
+    {
+      "name": "Yugui Yu",
+      "affiliation": "YYG Strategy Lab"
+    }
+  ],
+  "keywords": [
+    "world models",
+    "artificial general intelligence",
+    "human-referential theory",
+    "conceptual typology",
+    "positional polymorphism",
+    "progress-transfer illusion",
+    "probabilistic calibration",
+    "recursive self-improvement",
+    "世界模型",
+    "AGI 人本拟合论",
+    "位置多态"
+  ],
+  "license": "cc-by-4.0",
+  "language": "eng",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/yuyuguilab/world-models",
+      "relation": "isSupplementTo",
+      "resource_type": "dataset"
+    }
+  ],
+  "notes": "Manuscript in English and Chinese editions (paper.pdf / paper_zh.pdf). Part of the human-referential fitting theory program; theory paper: doi:10.5281/zenodo.23391808."
+}
