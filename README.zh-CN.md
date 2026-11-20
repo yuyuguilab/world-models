@@ -1,3 +1,5 @@
+[English](README.md) | **简体中文**
+
 # 世界模型：定义、澄清、区别与边界
 
 [AGI 人本拟合论](https://github.com/yuyuguilab/practice-fitting-theory)系列第六篇。把该理论的概念工具延伸到“世界模型”一词：

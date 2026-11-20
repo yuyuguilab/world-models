@@ -1,3 +1,5 @@
+**English** | [简体中文](README.zh-CN.md)
+
 # World Models: Definition, Clarification, Distinction, and Boundaries
 
 Sixth paper of the [human-referential fitting theory](https://github.com/yuyuguilab/practice-fitting-theory) program. The paper extends the program's conceptual toolkit to the term "world model":
