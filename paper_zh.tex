@@ -1,11 +1,6 @@
 % 中文版 LaTeX。
-% 编译：tectonic paper_zh.tex
-% 字体：fontset=none + 按路径直载 fandol（CTAN 字体，离线可编）
-% 若已有 fandol 缓存，可改回 fontset=fandol
-\documentclass[10pt,fontset=none]{ctexart}
-\setCJKmainfont[Path=/Users/mark/Library/Fonts/, Extension=.otf, BoldFont=FandolSong-Bold]{FandolSong-Regular}
-\setCJKsansfont[Path=/Users/mark/Library/Fonts/, Extension=.otf, BoldFont=FandolHei-Bold]{FandolHei-Regular}
-\setCJKmonofont[Path=/Users/mark/Library/Fonts/, Extension=.otf]{FandolFang-Regular}
+% 编译：tectonic paper_zh.tex（首次编译联网拉取 CTAN 资源包，含 Fandol 字体）
+\documentclass[10pt,fontset=fandol]{ctexart}
 
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}

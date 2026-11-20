@@ -17,7 +17,7 @@ tectonic paper.tex      # 英文版
 tectonic paper_zh.tex   # 中文版
 ```
 
-中文版按路径从 `~/Library/Fonts` 装载 Fandol 字体（CTAN `fandol` 包）；若 bundle 缓存已含字体，可把导言区改回 `fontset=fandol`。
+需要 [tectonic](https://tectonic-typesetting.dev/)。首次编译会经网络下载 CTAN 资源包（含两版共用的 Fandol 中文字体）；此后可离线编译。
 
 ## 版本
 
@@ -26,7 +26,7 @@ tectonic paper_zh.tex   # 中文版
 
 ## 引用
 
-余玉桂. 世界模型：定义、澄清、区别与边界. Zenodo, v1.0.0. doi:[10.5281/zenodo.24384107](https://doi.org/10.5281/zenodo.24384107)（概念 DOI：[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106)）
+余玉桂. 世界模型：定义、澄清、区别与边界. Zenodo, v1.0.1. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106)（概念 DOI，解析到最新版本）
 
 ```bibtex
 @article{yu2026worldmodels,
@@ -34,9 +34,9 @@ tectonic paper_zh.tex   # 中文版
   title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
   journal = {Zenodo},
   year    = {2026},
-  version = {v1.0.0},
-  doi     = {10.5281/zenodo.24384107},
-  url     = {https://doi.org/10.5281/zenodo.24384107}
+  version = {v1.0.1},
+  doi     = {10.5281/zenodo.24384106},
+  url     = {https://doi.org/10.5281/zenodo.24384106}
 }
 ```
 

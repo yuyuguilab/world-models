@@ -17,7 +17,7 @@ tectonic paper.tex      # English edition
 tectonic paper_zh.tex   # Chinese edition
 ```
 
-The Chinese edition loads Fandol fonts by path from `~/Library/Fonts` (CTAN `fandol` package); alternatively switch the preamble back to `fontset=fandol` once the bundle cache has the fonts.
+Requires [tectonic](https://tectonic-typesetting.dev/). The first run downloads the CTAN bundle (including the Fandol CJK fonts used by both editions) over the network; later builds work offline.
 
 ## Editions
 
@@ -26,7 +26,7 @@ The Chinese edition loads Fandol fonts by path from `~/Library/Fonts` (CTAN `fan
 
 ## Cite
 
-Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*. Zenodo, v1.0.0. doi:[10.5281/zenodo.24384107](https://doi.org/10.5281/zenodo.24384107) (concept: [10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106))
+Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*. Zenodo, v1.0.1. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106) (concept DOI; resolves to the latest version)
 
 ```bibtex
 @article{yu2026worldmodels,
@@ -34,9 +34,9 @@ Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*
   title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
   journal = {Zenodo},
   year    = {2026},
-  version = {v1.0.0},
-  doi     = {10.5281/zenodo.24384107},
-  url     = {https://doi.org/10.5281/zenodo.24384107}
+  version = {v1.0.1},
+  doi     = {10.5281/zenodo.24384106},
+  url     = {https://doi.org/10.5281/zenodo.24384106}
 }
 ```
 
