@@ -42,4 +42,4 @@ tectonic paper_zh.tex   # 中文版
 
 ## 许可
 
-CC BY 4.0。作者：余玉桂（YYG Strategy Lab）。
+CC BY 4.0。作者：余玉桂（余玉桂战略研究室）。
