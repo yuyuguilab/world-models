@@ -28,7 +28,7 @@ Requires [tectonic](https://tectonic-typesetting.dev/). The first run downloads 
 
 ## Cite
 
-Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*. Zenodo, v1.0.2. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106) (concept DOI; resolves to the latest version)
+Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*. Zenodo, v1.0.3. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106) (concept DOI; resolves to the latest version)
 
 ```bibtex
 @article{yu2026worldmodels,
@@ -36,7 +36,7 @@ Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*
   title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
   journal = {Zenodo},
   year    = {2026},
-  version = {v1.0.2},
+  version = {v1.0.3},
   doi     = {10.5281/zenodo.24384106},
   url     = {https://doi.org/10.5281/zenodo.24384106}
 }
