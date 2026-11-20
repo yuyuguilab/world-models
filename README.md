@@ -1,5 +1,7 @@
 **English** | [简体中文](README.zh-CN.md)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24384106.svg)](https://doi.org/10.5281/zenodo.24384106)
+
 # World Models: Definition, Clarification, Distinction, and Boundaries
 
 Sixth paper of the [human-referential fitting theory](https://github.com/yuyuguilab/practice-fitting-theory) program. The paper extends the program's conceptual toolkit to the term "world model":
