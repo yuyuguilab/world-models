@@ -24,6 +24,22 @@ tectonic paper_zh.tex   # 中文版
 - `paper.tex` / `paper.pdf`——英文版
 - `paper_zh.tex` / `paper_zh.pdf`——中文版
 
+## 引用
+
+余玉桂. 世界模型：定义、澄清、区别与边界. Zenodo, v1.0.0. doi:[10.5281/zenodo.24384107](https://doi.org/10.5281/zenodo.24384107)（概念 DOI：[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106)）
+
+```bibtex
+@article{yu2026worldmodels,
+  author  = {Yugui Yu},
+  title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
+  journal = {Zenodo},
+  year    = {2026},
+  version = {v1.0.0},
+  doi     = {10.5281/zenodo.24384107},
+  url     = {https://doi.org/10.5281/zenodo.24384107}
+}
+```
+
 ## 许可
 
 CC BY 4.0。作者：余玉桂（YYG Strategy Lab）。
