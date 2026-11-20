@@ -24,6 +24,22 @@ The Chinese edition loads Fandol fonts by path from `~/Library/Fonts` (CTAN `fan
 - `paper.tex` / `paper.pdf` — English
 - `paper_zh.tex` / `paper_zh.pdf` — Chinese
 
+## Cite
+
+Yugui Yu. *World Models: Definition, Clarification, Distinction, and Boundaries*. Zenodo, v1.0.0. doi:[10.5281/zenodo.24384107](https://doi.org/10.5281/zenodo.24384107) (concept: [10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106))
+
+```bibtex
+@article{yu2026worldmodels,
+  author  = {Yugui Yu},
+  title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
+  journal = {Zenodo},
+  year    = {2026},
+  version = {v1.0.0},
+  doi     = {10.5281/zenodo.24384107},
+  url     = {https://doi.org/10.5281/zenodo.24384107}
+}
+```
+
 ## License
 
 CC BY 4.0. Author: Yugui Yu (YYG Strategy Lab).
