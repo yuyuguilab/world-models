@@ -28,7 +28,7 @@ tectonic paper_zh.tex   # 中文版
 
 ## 引用
 
-余玉桂. 世界模型：定义、澄清、区别与边界. Zenodo, v1.0.1. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106)（概念 DOI，解析到最新版本）
+余玉桂. 世界模型：定义、澄清、区别与边界. Zenodo, v1.0.2. doi:[10.5281/zenodo.24384106](https://doi.org/10.5281/zenodo.24384106)（概念 DOI，解析到最新版本）
 
 ```bibtex
 @article{yu2026worldmodels,
@@ -36,7 +36,7 @@ tectonic paper_zh.tex   # 中文版
   title   = {World Models: Definition, Clarification, Distinction, and Boundaries},
   journal = {Zenodo},
   year    = {2026},
-  version = {v1.0.1},
+  version = {v1.0.2},
   doi     = {10.5281/zenodo.24384106},
   url     = {https://doi.org/10.5281/zenodo.24384106}
 }
